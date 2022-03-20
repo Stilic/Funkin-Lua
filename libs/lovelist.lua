@@ -1,23 +1,45 @@
 local lovelist = {}
 
-lovelist.sprites = {}
+lovelist.objects = {}
 
-function lovelist.add(spr)
-    table.insert(lovelist.sprites, spr)
+function lovelist.add(obj, keep)
+    if keep == nil then
+        keep = false
+    end
+
+    table.insert(lovelist.objects, {[0] = obj, [1] = keep})
+end
+
+function lovelist.remove(obj)
+    for k, v in pairs(lovelist.objects) do
+        if v[0] == obj then
+            if v[0].destroy ~= nil then
+                v[0]:destroy()
+            elseif o.release ~= nil then
+                v[0]:release()
+            end
+
+            lovelist.objects[k] = nil
+            collectgarbage("collect")
+
+            break
+        end
+    end
 end
 
 function lovelist.clear()
-    -- clear sprites from memory
-    for k, spr in pairs(lovelist.sprites) do
-        if spr.destroy ~= nil then
-            spr:destroy()
-        elseif spr.release ~= nil then
-            spr:release()
+    for k, v in pairs(lovelist.objects) do
+        if not v[1] then
+            if v[0].destroy ~= nil then
+                v[0]:destroy()
+            elseif o.release ~= nil then
+                v[0]:release()
+            end
         end
-
-        sprite[k] = nil
     end
-    lovelist.sprites = {}
+
+    lovelist.objects = {}
+    collectgarbage("collect")
 end
 
 return lovelist

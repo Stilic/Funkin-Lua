@@ -206,9 +206,9 @@ function Sprite:destroy()
         self.firstQuad = nil
         self.xmlData = nil
 
-        collectgarbage()
-
         self.destroyed = true
+
+        collectgarbage("collect")
 
         return true
     end

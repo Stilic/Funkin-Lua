@@ -30,10 +30,15 @@ xml = require("libs.xmlSimple").newParser()
 
 -- state shit
 curState = require "src.states.TitleState"
-_s = require "libs.lovelist"
+
+BGMusic = lovebpm.newTrack()
+BGMusic.playing = false
+
+-- _c for _cache lol
+_c = require "libs.lovelist"
 
 function switchState(newState)
-    _s.clear()
+    _c.clear()
     curState = newState
     love.load()
 end
@@ -44,14 +49,41 @@ confirmSnd = paths.getSound("confirmMenu")
 function love.load()
     love.keyboard.setKeyRepeat(true)
 
+    if not BGMusic.playing then
+        BGMusic:load(paths.music('freakyMenu')):setBPM(102):setLooping(true):on("beat", love.beatHit)
+        BGMusic.playing = false
+    end
+
     if curState.load ~= null then
         curState.load()
+
+        if not BGMusic.playing then
+            playBGMusic()
+        end
+    end
+end
+
+function playBGMusic()
+    BGMusic:play()
+    BGMusic.playing = true
+end
+
+function pauseBGMusic()
+    BGMusic:pause()
+    BGMusic.playing = false
+end
+
+function love.beatHit(n)
+    if curState.beatHit ~= null then
+        curState.beatHit(n)
     end
 end
 
 function love.update(dt)
+    dt = math.min(dt, 1 / 30)
+
+    BGMusic:update()
     if curState.update ~= null then
-        dt = math.min(dt, 1 / 30)
         curState.update(dt)
     end
 end

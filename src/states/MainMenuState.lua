@@ -2,7 +2,7 @@ local mainmenu = {}
 
 function mainmenu.load()
 	menuBG = paths.getImage("menuBG")
-	_s.add(menuBG)
+	_c.add(menuBG)
 end
 
 function mainmenu.draw()
