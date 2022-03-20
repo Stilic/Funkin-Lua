@@ -82,6 +82,7 @@ function Sprite.addAnim(self, name, prefix, indices, framerate, loop)
 
             if string.match(data["@name"], prefix) then
                 local quads = {}
+                local offsets = {}
                 local length = 0
 
                 for f = 1, #self.xmlData do
@@ -95,13 +96,6 @@ function Sprite.addAnim(self, name, prefix, indices, framerate, loop)
 
                             local width = data["@width"]
                             local height = data["@height"]
-
-                            if data["@frameX"] ~= nil then
-                                x = x + data["@frameX"]
-                            end
-                            if data["@frameY"] ~= nil then
-                                y = y + data["@frameY"]
-                            end
 
                             if data["@frameWidth"] ~= nil then
                                 width = data["@frameWidth"]
@@ -120,6 +114,19 @@ function Sprite.addAnim(self, name, prefix, indices, framerate, loop)
                             end
 
                             table.insert(quads, quad)
+
+                            local offsetX = 0
+                            local offsetY = 0
+
+                            if data["@frameX"] ~= nil then
+                                offsetX = data["@frameX"]
+                            end
+                            if data["@frameY"] ~= nil then
+                                offsetY = data["@frameY"]
+                            end
+
+                            table.insert(offsets, {offsetX, offsetY})
+
                             length = length + 1
                         end
                     end
@@ -128,6 +135,7 @@ function Sprite.addAnim(self, name, prefix, indices, framerate, loop)
                 self.animations[name] = {
                     name = name,
                     quads = quads,
+                    offsets = offsets,
                     length = length,
                     framerate = framerate,
                     _duration = length / framerate / 1.25,

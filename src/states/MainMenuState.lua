@@ -20,7 +20,7 @@ function mainmenu.load()
 
     for i = 1, #options do
         local spr = sprite.new("mainmenu/menu_" .. options[i],
-                               love.graphics.getWidth() / 4, 30 + (i - 1) * 155)
+                               love.graphics.getWidth() / 4, 50 + (i - 1) * 155)
         spr:addAnim("idle", options[i] .. " basic")
         spr:addAnim("selected", options[i] .. " white")
         menuItems:add(spr)
