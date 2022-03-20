@@ -26,8 +26,6 @@ function titlestate.load()
         end
 
     end):play()
--- i hope this works
-    mainmenu.load()
 end
 
 function titlestate.update(dt)
@@ -36,22 +34,17 @@ function titlestate.update(dt)
     titleText:update(dt)
 
     music:update()
-
-    mainmenu.update(dt)
 end
 
 function titlestate.draw()
     gf:draw(512, 40)
     logo:draw(-100, -50)
     titleText:draw(100, 576)
-
-    mainmenu.draw()
 end
 
 function titlestate.keypressed(key)
     if key == "return" then
         love.audio.play(confirmSnd)
-
     end
 end
 

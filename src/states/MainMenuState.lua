@@ -1,9 +1,9 @@
 local mainmenu = {}
 function mainmenu.load()
-	menuBG = utils.makeSprite("menuBG")
+	menuBG = love.graphics.newImage("assets/images/menuBG.png")
 end
 
 function mainmenu.draw()
-	menuBG:draw(0, 0)
+	love.graphics.draw(menuBG, 0, 0)
 end
 return mainmenu
