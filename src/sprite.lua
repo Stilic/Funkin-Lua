@@ -114,7 +114,7 @@ function Sprite.addAnim(self, name, prefix, indices, framerate, loop)
 
                             local quad =
                                 love.graphics.newQuad(x, y, width, height,
-                                                      self.gfx)
+                                                      self.gfx:getDimensions())
 
                             if self.firstQuad == nil then
                                 self.firstQuad = quad
@@ -128,7 +128,7 @@ function Sprite.addAnim(self, name, prefix, indices, framerate, loop)
                                 offset[0] = data["@frameX"]
                             end
                             if data["@frameY"] ~= nil then
-                                offset[1] = data["@frameY"]
+                                offset[1] = y - data["@frameY"]
                             end
 
                             if self.firstOffset == nil then
