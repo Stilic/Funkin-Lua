@@ -1,4 +1,5 @@
 local titlestate = {}
+local mainmenu = require "src.states.MainMenuState"
 
 function titlestate.load()
     gf = utils.makeSprite("gfDanceTitle")
