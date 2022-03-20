@@ -1,14 +1,15 @@
-local sprite = {}
-
-local utils = require "src.utils"
-
--- default data
 local Sprite = {
+    x = 0,
+    y = 0,
+    angle = 0,
+
+    paused = false,
+    destroyed = false,
+
     gfx = nil,
-    xmlData = nil,
+    xmlData = {},
     animations = {},
     firstQuad = nil,
-
     curAnim = {
         name = '',
         quads = {},
@@ -19,16 +20,24 @@ local Sprite = {
         loop = false,
         finished = false
     },
-
     curFrame = 1,
-    lastFrame = 1,
-
-    paused = false,
-    destroyed = false
+    lastFrame = 1
 }
 Sprite.__index = Sprite
 
-function Sprite:update(dt)
+local function new(path, x, y)
+    local self = {x = x, y = y}
+    setmetatable(self, Sprite)
+    self:loadImage(path)
+    return self
+end
+
+function Sprite.loadImage(self, path)
+    self.gfx = paths.getImage(path)
+    self.xmlData = utils.parseAtlas(paths.readXml("images/" .. path))
+end
+
+function Sprite.update(self, dt)
     if not self.destroyed then
         if not self.paused then
             self.curFrame = self.curFrame + 10 * (dt * 1.75)
@@ -41,7 +50,7 @@ function Sprite:update(dt)
     end
 end
 
-function Sprite:draw(x, y, r, sx, sy)
+function Sprite.draw(self, sx, sy)
     if not self.destroyed then
         local spriteNum = math.floor(self.curFrame)
         if not self.paused then
@@ -52,29 +61,20 @@ function Sprite:draw(x, y, r, sx, sy)
         end
 
         local quad = self.curAnim.quads[spriteNum]
-        if quad == nil then
-            quad = self.firstQuad
-        end
+        if quad == nil then quad = self.firstQuad end
 
-        love.graphics.draw(self.gfx, quad, x, y, r, sx, sy)
+        love.graphics.draw(self.gfx, quad, self.x, self.y, self.angle, sx, sy)
 
-        if not self.paused and not self.curAnim.loop and spriteNum >= self.curAnim.length then
-            self.curAnim.finished = true
-        end
+        if not self.paused and not self.curAnim.loop and spriteNum >=
+            self.curAnim.length then self.curAnim.finished = true end
     end
 end
 
-function Sprite:addAnim(name, prefix, indices, framerate, loop)
+function Sprite.addAnim(self, name, prefix, indices, framerate, loop)
     if not self.destroyed then
-        if indices == nil then
-            indices = {};
-        end
-        if framerate == nil then
-            framerate = 24
-        end
-        if loop == nil then
-            loop = true
-        end
+        if indices == nil then indices = {}; end
+        if framerate == nil then framerate = 24 end
+        if loop == nil then loop = true end
 
         for i = 1, #self.xmlData do
             local data = self.xmlData[i]
@@ -87,7 +87,8 @@ function Sprite:addAnim(name, prefix, indices, framerate, loop)
                     local data = self.xmlData[f]
 
                     if string.starts(data["@name"], prefix) then
-                        if table.length(indices) == 0 or table.has_value(indices, f) then
+                        if table.length(indices) == 0 or
+                            table.has_value(indices, f) then
                             local x = data["@x"]
                             local y = data["@y"]
 
@@ -109,7 +110,9 @@ function Sprite:addAnim(name, prefix, indices, framerate, loop)
                                 y = y + 2
                             end
 
-                            local quad = love.graphics.newQuad(x, y, width, height, self.gfx:getDimensions())
+                            local quad =
+                                love.graphics.newQuad(x, y, width, height,
+                                                      self.gfx)
 
                             if self.firstQuad == nil then
                                 self.firstQuad = quad
@@ -136,11 +139,9 @@ function Sprite:addAnim(name, prefix, indices, framerate, loop)
     end
 end
 
-function Sprite:removeAnim(name)
+function Sprite.removeAnim(self, name)
     if self.animations[name] ~= nil then
-        if self.curAnim.name == name then
-            self:stop()
-        end
+        if self.curAnim.name == name then self:stop() end
 
         self.animations[name] = nil
         return true
@@ -149,22 +150,17 @@ function Sprite:removeAnim(name)
     return false
 end
 
-function Sprite:playAnim(anim, forced)
+function Sprite.playAnim(self, anim, forced)
     if not self.destroyed and not self.paused then
-        if forced == nil then
-            forced = false
-        end
+        if forced == nil then forced = false end
+        -- very dumb i am so i do this
+        local canPlay = true
+        if not forced and self.curAnim.name == anim then canPlay = false end
 
-        self:stop()
+        if canPlay then
+            self:stop()
 
-        if self.animations[anim] ~= null then
-            -- very dumb i am so i do this
-            local canPlay = true
-            if not forced and self.curAnim.name == anim then
-                canPlay = false
-            end
-
-            if canPlay then
+            if self.animations[anim] ~= nil then
                 self.curAnim = self.animations[anim]
                 self.curAnim.finished = false
                 self.curFrame = 1
@@ -174,23 +170,15 @@ function Sprite:playAnim(anim, forced)
     end
 end
 
-function Sprite:getCurrentAnim()
-    return self.curAnim
-end
+function Sprite.getCurrentAnim(self) return self.curAnim end
 
-function Sprite:pause()
-    self.paused = true
-end
+function Sprite.pause(self) self.paused = true end
 
-function Sprite:play()
-    self.paused = false
-end
+function Sprite.play(self) self.paused = false end
 
-function Sprite:stop()
-    self.curAnim = nil
-end
+function Sprite.stop(self) self.curAnim = nil end
 
-function Sprite:destroy()
+function Sprite.destroy(self)
     if not self.destroyed then
         self:stop()
         self.curFrame = 1
@@ -216,15 +204,7 @@ function Sprite:destroy()
     return false
 end
 
--- HELPER FUNCTION
-function sprite.newSprite(gfx, xml)
-    local self = {}
-    setmetatable(self, Sprite)
-
-    self.gfx = gfx
-    self.xmlData = utils.parseAtlas(xml)
-
-    return self
-end
-
-return sprite
+return {
+    new = new, -- constructor
+    __object = Sprite -- object table/metatable
+}

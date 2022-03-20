@@ -3,17 +3,20 @@ local titlestate = {}
 local mainmenu = require "src.states.MainMenuState"
 
 function titlestate.load()
-    gf = utils.makeSprite("gfDanceTitle")
+    gf = sprite.new("gfDanceTitle", 512, 40)
     gf.danceLeft = false
-    gf:addAnim("danceLeft", "gfDance", {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14}, 24, false)
-    gf:addAnim("danceRight", "gfDance", {15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29}, 24, false)
+    gf:addAnim("danceLeft", "gfDance",
+               {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14}, 24, false)
+    gf:addAnim("danceRight", "gfDance",
+               {15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29}, 24,
+               false)
     _c.add(gf)
 
-    logo = utils.makeSprite("logoBumpin")
+    logo = sprite.new("logoBumpin", -100, -50)
     logo:addAnim("bump", "logo bumpin instance ", nil, 24, false)
     _c.add(logo)
 
-    titleText = utils.makeSprite("titleEnter")
+    titleText = sprite.new("titleEnter", 100, 576)
     titleText:addAnim("idle", "Press Enter to Begin")
     titleText:addAnim("press", "ENTER PRESSED")
     titleText:playAnim("idle")
@@ -27,9 +30,9 @@ function titlestate.update(dt)
 end
 
 function titlestate.draw()
-    gf:draw(512, 40)
-    logo:draw(-100, -50)
-    titleText:draw(100, 576)
+    gf:draw()
+    logo:draw()
+    titleText:draw()
 end
 
 function titlestate.beatHit()
@@ -44,11 +47,9 @@ function titlestate.beatHit()
 end
 
 function titlestate.keypressed(key, scancode, isrepeat)
-    if not isrepeat then
-        if key == "return" then
-            love.audio.play(confirmSnd)
-            switchState(mainmenu)
-        end
+    if not isrepeat and key == "return" then
+        utils.playSound(confirmSnd)
+        switchState(mainmenu)
     end
 end
 
