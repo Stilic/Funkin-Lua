@@ -25,7 +25,7 @@ function mainmenu.load()
 	donate:addAnim("selected", "donate white")
 	donate:playAnim("idle")
 	_c.add(donate)
--- credit to psych engine for making the options sprites btw.
+-- oh yeah the fnf team made the options button sprites my bad lol
 	options = utils.makeSprite("menu_options")
 	options:addAnim("idle", "options basic")
 	options:addAnim("selected", "options white")
