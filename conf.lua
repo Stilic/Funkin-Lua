@@ -1,4 +1,4 @@
-paths = require("src.paths")
+local paths = require("src.paths")
 
 function love.conf(t)
     t.window.title = "Funkin' LUA"
