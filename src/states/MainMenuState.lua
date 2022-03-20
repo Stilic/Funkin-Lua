@@ -11,8 +11,9 @@ local options = {
     "donate", "options"
 }
 
+local curSelected = 0
+
 function mainmenu.load()
-    curSelected = 0
 
     menuBG = paths.getImage("menuBG")
     _c.add(menuBG)
@@ -22,26 +23,23 @@ function mainmenu.load()
                                love.graphics.getWidth() / 4, 30 + (i - 1) * 155)
         spr:addAnim("idle", options[i] .. " basic")
         spr:addAnim("selected", options[i] .. " white")
-        spr:playAnim("idle")
         menuItems:add(spr)
     end
 
     _c.add(menuItems)
+
+    mainmenu.changeSelection(0)
 end
 
-local function changeSelection(change)
-    utils.playSound(scrollSnd)
-
+function mainmenu.changeSelection(change)
     curSelected = curSelected + change
 
     if curSelected >= menuItems.length then curSelected = 0 end
     if curSelected < 0 then curSelected = menuItems.length - 1 end
 
-    print("-----------------")
-
     for k, s in pairs(menuItems.sprites) do
         if k == curSelected then
-            s:playAnim("selected", false)
+            s:playAnim("selected")
         else
             s:playAnim("idle")
         end
@@ -58,9 +56,11 @@ end
 function mainmenu.keypressed(key, scancode, isrepeat)
     if not isrepeat then
         if key == "up" then
-            changeSelection(-1)
+            utils.playSound(scrollSnd)
+            mainmenu.changeSelection(-1)
         elseif key == "down" then
-            changeSelection(1)
+            utils.playSound(scrollSnd)
+            mainmenu.changeSelection(1)
         elseif key == "escape" then
             menuItems:clear()
             utils.playSound(cancelSnd)

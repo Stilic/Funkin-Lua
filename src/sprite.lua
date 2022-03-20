@@ -11,7 +11,7 @@ local Sprite = {
     animations = {},
     firstQuad = nil,
     curAnim = {
-        name = '',
+        name = "",
         quads = {},
         length = 0,
         height = 0,
@@ -65,8 +65,9 @@ function Sprite.draw(self, sx, sy)
 
         love.graphics.draw(self.gfx, quad, self.x, self.y, self.angle, sx, sy)
 
-        if not self.paused and not self.curAnim.loop and spriteNum >=
-            self.curAnim.length then self.curAnim.finished = true end
+        if not self.paused and spriteNum >= self.curAnim.length then
+            self.curAnim.finished = true
+        end
     end
 end
 
@@ -151,22 +152,15 @@ function Sprite.removeAnim(self, name)
 end
 
 function Sprite.playAnim(self, anim, forced)
-    if not self.destroyed and not self.paused then
-        if forced == nil then forced = false end
-        -- very dumb i am so i do this
-        local canPlay = true
-        if not forced and self.curAnim.name == anim then canPlay = false end
+    if forced == nil then forced = false end
 
-        if canPlay then
-            self:stop()
+    if not self.destroyed and not self.paused and self.animations[anim] ~= nil then
+        if not forced and anim == self.curAnim.name then return end
 
-            if self.animations[anim] ~= nil then
-                self.curAnim = self.animations[anim]
-                self.curAnim.finished = false
-                self.curFrame = 1
-                self.lastFrame = 1
-            end
-        end
+        self.curAnim = self.animations[anim]
+        self.curAnim.finished = false
+        self.curFrame = 1
+        self.lastFrame = 1
     end
 end
 
