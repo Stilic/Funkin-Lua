@@ -9,10 +9,13 @@ local Sprite = {
     gfx = nil,
     xmlData = {},
     animations = {},
+    offsets = {},
     firstQuad = nil,
+    firstOffset = nil,
     curAnim = {
         name = "",
         quads = {},
+        offsets = {},
         length = 0,
         height = 0,
         width = 0,
@@ -63,7 +66,11 @@ function Sprite.draw(self, sx, sy)
         local quad = self.curAnim.quads[spriteNum]
         if quad == nil then quad = self.firstQuad end
 
-        love.graphics.draw(self.gfx, quad, self.x, self.y, self.angle, sx, sy)
+        local offset = self.offsets[spriteNum]
+        if offset == nil then offset = self.firstOffset end
+
+        love.graphics.draw(self.gfx, quad, self.x, self.y, self.angle, sx, sy,
+                           offset[0], offset[1])
 
         if not self.paused and spriteNum >= self.curAnim.length then
             self.curAnim.finished = true
@@ -115,17 +122,20 @@ function Sprite.addAnim(self, name, prefix, indices, framerate, loop)
 
                             table.insert(quads, quad)
 
-                            local offsetX = 0
-                            local offsetY = 0
+                            local offset = {0, 0}
 
                             if data["@frameX"] ~= nil then
-                                offsetX = data["@frameX"]
+                                offset[0] = data["@frameX"]
                             end
                             if data["@frameY"] ~= nil then
-                                offsetY = data["@frameY"]
+                                offset[1] = data["@frameY"]
                             end
 
-                            table.insert(offsets, {offsetX, offsetY})
+                            if self.firstOffset == nil then
+                                self.firstOffset = offset
+                            end
+
+                            table.insert(offsets, offset)
 
                             length = length + 1
                         end
@@ -194,6 +204,7 @@ function Sprite.destroy(self)
         end
         self.animations = {}
         self.firstQuad = nil
+        self.firstOffset = nil
         self.xmlData = nil
 
         self.destroyed = true
