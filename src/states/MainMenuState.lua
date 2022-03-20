@@ -2,11 +2,18 @@ local mainmenu = {}
 
 local menuItems = lovegroup.new()
 
-local options = {"story_mode", "freeplay", "options"}
-
-local curSelected = 0
+local options = {
+    "story_mode", "freeplay",
+    --[[i kept the donate button just because i might add a link to my paypal or something idk
+	but i think i really shouldn't try to profit from a fnf engine even if its optional
+	let's just keep it like this unless we talk bout this, ight?
+]]
+    "donate", "options"
+}
 
 function mainmenu.load()
+    curSelected = 0
+
     menuBG = paths.getImage("menuBG")
     _c.add(menuBG)
 
@@ -19,7 +26,7 @@ function mainmenu.load()
         menuItems:add(spr)
     end
 
-    _c:add(menuItems)
+    _c.add(menuItems)
 end
 
 local function changeSelection(change)
@@ -29,18 +36,19 @@ local function changeSelection(change)
 
     if curSelected >= menuItems.length then curSelected = 0 end
     if curSelected < 0 then curSelected = menuItems.length - 1 end
-end
 
-function mainmenu.update(dt)
+    print("-----------------")
+
     for k, s in pairs(menuItems.sprites) do
         if k == curSelected then
-            s:playAnim("selected")
+            s:playAnim("selected", false)
         else
             s:playAnim("idle")
         end
     end
-    menuItems:update(dt)
 end
+
+function mainmenu.update(dt) menuItems:update(dt) end
 
 function mainmenu.draw()
     love.graphics.draw(menuBG, 0, 0)
