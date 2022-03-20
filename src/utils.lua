@@ -1,6 +1,6 @@
 local utils = {}
 
-function utils.tablelength(T)
+function utils.tableLength(T)
     local count = 0
     for _ in pairs(T) do
         count = count + 1
@@ -21,7 +21,7 @@ end
 function utils.parseAtlas(xml)
     local anims = {}
     local texList = xml.TextureAtlas.SubTexture
-    for i = 1, utils.tablelength(texList) do
+    for i = 1, #texList do
         table.insert(anims, texList[i])
     end
     return anims

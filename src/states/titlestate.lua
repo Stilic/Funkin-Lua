@@ -3,7 +3,7 @@ local titlestate = {}
 function titlestate.load()
     gf = utils.makeSprite("gfDanceTitle")
     gf.danceLeft = false
-    gf:addAnim("danceLeft", "gfDance", {30, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14}, 24, false)
+    gf:addAnim("danceLeft", "gfDance", {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14}, 24, false)
     gf:addAnim("danceRight", "gfDance", {15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29}, 24, false)
 
     logo = utils.makeSprite("logoBumpin")
@@ -41,9 +41,12 @@ function titlestate.draw()
     titleText:draw(100, 576)
 end
 
-function titlestate.keypressed(key)
-    if key == "return" then
-        love.audio.play(confirmSnd)
+function titlestate.keypressed(key, scancode, isrepeat)
+    if not isrepeat then
+        if key == "return" then
+            love.audio.play(confirmSnd)
+            gf:pause()
+        end
     end
 end
 

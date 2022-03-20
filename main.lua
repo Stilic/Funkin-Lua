@@ -27,6 +27,8 @@ xml = require("libs.xmlSimple").newParser()
 confirmSnd = paths.getSound("confirmMenu")
 
 function love.load()
+    love.keyboard.setKeyRepeat(true)
+
     titlestate.load()
 end
 
