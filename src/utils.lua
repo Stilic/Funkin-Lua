@@ -1,13 +1,5 @@
 local utils = {}
 
-function utils.tableLength(T)
-    local count = 0
-    for _ in pairs(T) do
-        count = count + 1
-    end
-    return count
-end
-
 function utils.readFile(path)
     local file = io.open(path, "rb") -- r read mode and b binary mode
     if not file then

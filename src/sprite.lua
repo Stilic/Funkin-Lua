@@ -1,6 +1,6 @@
-local utils = require "src.utils"
-
 local sprite = {}
+
+local utils = require "src.utils"
 
 -- default data
 local Sprite = {
@@ -87,7 +87,7 @@ function Sprite:addAnim(name, prefix, indices, framerate, loop)
                     local data = self.xmlData[f]
 
                     if string.starts(data["@name"], prefix) then
-                        if utils.tableLength(indices) == 0 or table.has_value(indices, f) then
+                        if table.length(indices) == 0 or table.has_value(indices, f) then
                             local x = data["@x"]
                             local y = data["@y"]
 
@@ -206,7 +206,7 @@ function Sprite:destroy()
         self.firstQuad = nil
         self.xmlData = nil
 
-        collectgarbage("collect")
+        collectgarbage()
 
         self.destroyed = true
 

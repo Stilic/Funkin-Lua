@@ -1,6 +1,8 @@
 local mainmenu = {}
+
 function mainmenu.load()
-	menuBG = love.graphics.newImage("assets/images/menuBG.png")
+	menuBG = paths.getImage("menuBG")
+	_s.add(menuBG)
 end
 
 function mainmenu.draw()
