@@ -1,8 +1,9 @@
 local mainmenu = {}
-function mainmenu.load
+function mainmenu.load()
 	menuBG = utils.makeSprite("menuBG")
 end
 
-function mainmenu.draw
+function mainmenu.draw()
 	menuBG:draw(0, 0)
 end
+return mainmenu
