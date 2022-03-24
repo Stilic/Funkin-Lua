@@ -1,3 +1,6 @@
+-- LoveGroup, a simpler way to manage multiples sprites
+-- Made originally by Stilic for Funkin Lua
+
 local LoveGroup = {sprites = {}, length = 0}
 LoveGroup.__index = LoveGroup
 

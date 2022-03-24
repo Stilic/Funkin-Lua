@@ -4,5 +4,12 @@
         "${3rd}/love2d/library"
     ],
     "Lua.workspace.checkThirdParty": false,
-    "Lua.completion.autoRequire": false
+    "Lua.completion.autoRequire": false,
+    "Lua.diagnostics.disable": [
+        "lowercase-global",
+        "discard-returns"
+    ],
+    "Lua.diagnostics.globals": [
+        "system"
+    ]
 }
