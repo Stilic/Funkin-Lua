@@ -1,11 +1,8 @@
 local utils = {}
 
 function utils.readFile(path)
-    local file = io.open(path, "rb") -- r read mode and b binary mode
-    if not file then return nil end
-    local content = file:read "*a" -- *a or *all reads the whole file
-    file:close()
-    return content
+    local contents, size = love.filesystem.read(path)
+    return contents
 end
 
 function utils.parseAtlas(xml)
