@@ -5,13 +5,6 @@ function utils.readFile(path)
     return contents
 end
 
-function utils.parseAtlas(xml)
-    local anims = {}
-    local texList = xml.TextureAtlas.SubTexture
-    for i = 1, #texList do table.insert(anims, texList[i]) end
-    return anims
-end
-
 function utils.clearSprite(spr)
     if spr.destroy ~= nil then
         spr:destroy()

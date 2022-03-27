@@ -14,18 +14,18 @@ local options = {
 local curSelected = 0
 
 function mainmenu.load()
-
     menuBG = paths.getImage("menuBG")
     _c.add(menuBG)
 
-    for i = 1, #options do
-        local spr = sprite.new("mainmenu/menu_" .. options[i],
-                               love.graphics.getWidth() / 4, 50 + (i - 1) * 155)
-        spr:addAnim("idle", options[i] .. " basic")
-        spr:addAnim("selected", options[i] .. " white")
-        menuItems:add(spr)
-    end
+    -- for i = 1, #options do
+    --     local spr = sprite.new("mainmenu/menu_" .. options[i],
+    --                            love.graphics.getWidth() / 4, 50 + (i - 1) * 155)
+    --     spr:addAnim("idle", options[i] .. " basic")
+    --     spr:addAnim("selected", options[i] .. " white")
+    --     menuItems:add(spr)
+    -- end
 
+    -- storymode = sprite.new(paths.image())
     _c.add(menuItems)
 
     mainmenu.changeSelection(0)
@@ -49,7 +49,7 @@ end
 function mainmenu.update(dt) menuItems:update(dt) end
 
 function mainmenu.draw()
-    love.graphics.draw(menuBG, 0, 0)
+    love.graphics.draw(menuBG, 0, 0, 0, 1.1, 1.1)
     menuItems:draw()
 end
 

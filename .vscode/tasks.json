@@ -6,7 +6,7 @@
         {
             "label": "Run project",
             "type": "shell",
-            "command": "love .",
+            "command": "love ./src",
             "problemMatcher": [],
             "group": {
                 "kind": "build",

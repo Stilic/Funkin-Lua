@@ -1,3 +1,5 @@
+local xml = require("lib.xmlSimple").newParser()
+
 local Sprite = {
     x = 0,
     y = 0,
@@ -6,16 +8,19 @@ local Sprite = {
     sizeX = 1,
     sizeY = 1,
 
+    offsetX = 0,
+    offsetY = 0,
+
     paused = false,
     destroyed = false,
 
     gfx = nil,
     xmlData = {},
     animations = {},
-    firstQuad = nil,
+    firstFrame = nil,
     curAnim = {
         name = "",
-        quads = {},
+        frames = {},
         length = 0,
         height = 0,
         width = 0,
@@ -36,8 +41,12 @@ local function new(path, x, y)
 end
 
 function Sprite.loadImage(self, path)
-    self.gfx = paths.getImage(path)
-    self.xmlData = utils.parseAtlas(paths.readXml("images/" .. path))
+    self.gfx = love.graphics.newImage(path .. ".png")
+
+    local contents, size = love.filesystem.read(path .. ".xml")
+    self.xmlData = xml:ParseXmlText(contents).TextureAtlas.SubTexture
+
+    return self
 end
 
 function Sprite.update(self, dt)
@@ -63,25 +72,26 @@ function Sprite.draw(self)
             spriteNum = self.lastFrame
         end
 
-        local quad = self.curAnim.quads[spriteNum]
-        if quad == nil then quad = self.firstQuad end
+        local frame = self.curAnim.frames[spriteNum]
+        if frame == nil then frame = self.firstFrame end
 
         -- very inspired from funkin-rewritten lol
         local width
         local height
 
-        if quad.offsets["width"] == 0 then
-            width = math.floor(quad.width / 2)
+        if frame.offsets["width"] == 0 then
+            width = math.floor(frame.width / 2)
         else
-            width = math.floor(quad.offsets["width"] / 2) + quad.offsets["x"]
+            width = math.floor(frame.offsets["width"] / 2) + frame.offsets["x"]
         end
-        if quad.offsets["height"] == 0 then
-            height = math.floor(quad.height / 2)
+        if frame.offsets["height"] == 0 then
+            height = math.floor(frame.height / 2)
         else
-            height = math.floor(quad.offsets["height"] / 2) + quad.offsets["y"]
+            height = math.floor(frame.offsets["height"] / 2) +
+                         frame.offsets["y"]
         end
 
-        love.graphics.draw(self.gfx, quad, self.x, self.y, self.angle,
+        love.graphics.draw(self.gfx, frame.quad, self.x, self.y, self.angle,
                            self.sizeX, self.sizeY, width + self.offsetX,
                            height + self.offsetY)
 
@@ -103,7 +113,7 @@ function Sprite.addAnim(self, name, prefix, indices, framerate, loop)
             if string.match(data["@name"], prefix) then
                 local anim = {
                     name = name,
-                    quads = {},
+                    frames = {},
                     length = 0,
                     framerate = framerate,
                     loop = loop
@@ -115,14 +125,15 @@ function Sprite.addAnim(self, name, prefix, indices, framerate, loop)
                     if string.starts(data["@name"], prefix) then
                         if table.length(indices) == 0 or
                             table.has_value(indices, f) then
-                            local quad =
-                                love.graphics.newQuad(data["@x"], data["@y"],
-                                                      data["@width"],
-                                                      data["@height"],
-                                                      self.gfx:getDimensions())
-
-                            quad.width = data["@width"]
-                            quad.height = data["@height"]
+                            local frame = {
+                                quad = love.graphics.newQuad(data["@x"],
+                                                             data["@y"],
+                                                             data["@width"],
+                                                             data["@height"],
+                                                             self.gfx:getDimensions()),
+                                width = data["@width"],
+                                height = data["@height"]
+                            }
 
                             local offsetX = data["@frameX"]
                             if offsetX == nil then
@@ -142,17 +153,17 @@ function Sprite.addAnim(self, name, prefix, indices, framerate, loop)
                                 offsetHeight = 0
                             end
 
-                            quad.offsets = {
+                            frame.offsets = {
                                 ["x"] = offsetX,
                                 ["y"] = offsetY,
                                 ["width"] = offsetWidth,
                                 ["height"] = offsetHeight
                             }
 
-                            if self.firstQuad == nil then
-                                self.firstQuad = quad
+                            if self.firstFrame == nil then
+                                self.firstFrame = frame
                             end
-                            table.insert(anim.quads, quad)
+                            table.insert(anim.frames, frame)
 
                             anim.length = anim.length + 1
                         end
@@ -165,17 +176,16 @@ function Sprite.addAnim(self, name, prefix, indices, framerate, loop)
             end
         end
     end
+
+    return self
 end
 
 function Sprite.removeAnim(self, name)
     if self.animations[name] ~= nil then
         if self.curAnim.name == name then self:stop() end
-
         self.animations[name] = nil
-        return true
     end
-
-    return false
+    return self
 end
 
 function Sprite.playAnim(self, anim, forced)
@@ -184,20 +194,33 @@ function Sprite.playAnim(self, anim, forced)
     if not self.destroyed and not self.paused and self.animations[anim] ~= nil then
         if not forced and anim == self.curAnim.name then return end
 
-        self.curAnim = self.animations[anim]
+        if anim ~= self.curAnim.name then
+            self.curAnim = self.animations[anim]
+        end
         self.curAnim.finished = false
         self.curFrame = 1
         self.lastFrame = 1
     end
+
+    return self
 end
 
 function Sprite.getCurrentAnim(self) return self.curAnim end
 
-function Sprite.pause(self) self.paused = true end
+function Sprite.pause(self)
+    self.paused = true
+    return self
+end
 
-function Sprite.play(self) self.paused = false end
+function Sprite.play(self)
+    self.paused = false
+    return self
+end
 
-function Sprite.stop(self) self.curAnim = nil end
+function Sprite.stop(self)
+    self.curAnim = nil
+    return self
+end
 
 function Sprite.destroy(self)
     if not self.destroyed then
@@ -207,22 +230,20 @@ function Sprite.destroy(self)
         self.gfx:release()
 
         for a = 1, #self.animations do
-            for q = 1, #self.animations[a].quads do
-                self.animations[a].quads[q]:release()
+            for q = 1, #self.animations[a].frames do
+                self.animations[a].frames[q]:release()
             end
         end
         self.animations = {}
-        self.firstQuad = nil
+        self.firstFrame = nil
         self.xmlData = nil
 
         self.destroyed = true
 
         collectgarbage("collect")
-
-        return true
     end
 
-    return false
+    return self
 end
 
 return {

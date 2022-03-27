@@ -1,6 +1,4 @@
-paths = {}
-
-paths.base = "assets"
+local paths = {base = "assets"}
 
 function paths.getPath(path) return paths.base .. "/" .. path end
 
@@ -18,12 +16,10 @@ end
 
 function paths.image(path) return paths.getPath("images/" .. path .. ".png") end
 
+function paths.atlas(path) return paths.getPath("images/" .. path) end
+
 function paths.getImage(path) return love.graphics.newImage(paths.image(path)) end
 
 function paths.xml(path) return paths.getPath(path .. ".xml") end
-
-function paths.readXml(path)
-    return xml:ParseXmlText(utils.readFile(paths.xml(path)))
-end
 
 return paths

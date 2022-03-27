@@ -1,9 +1,9 @@
 local titlestate = {}
 
-local mainmenu = require "src.states.MainMenuState"
+local mainmenu = require "states.MainMenuState"
 
 function titlestate.load()
-    gf = sprite.new("gfDanceTitle", 512, 40)
+    gf = sprite.new(paths.atlas("gfDanceTitle"), 512, 40)
     gf.danceLeft = false
     gf:addAnim("danceLeft", "gfDance",
                {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14}, 24, false)
@@ -12,11 +12,11 @@ function titlestate.load()
                false)
     _c.add(gf)
 
-    logo = sprite.new("logoBumpin", -100, -50)
+    logo = sprite.new(paths.atlas("logoBumpin"), -150, -100)
     logo:addAnim("bump", "logo bumpin instance ", nil, 24, false)
     _c.add(logo)
 
-    titleText = sprite.new("titleEnter", 100, 576)
+    titleText = sprite.new(paths.atlas("titleEnter"), 100, 576)
     titleText:addAnim("idle", "Press Enter to Begin")
     titleText:addAnim("press", "ENTER PRESSED")
     titleText:playAnim("idle")

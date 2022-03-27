@@ -4,32 +4,33 @@ name: Build
 
 # Controls when the workflow will run
 on:
-  # Triggers the workflow on push or pull request events but only for the main branch
-  push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
+    # Triggers the workflow on push or pull request events but only for the main branch
+    push:
+        branches: [main]
+    pull_request:
+        branches: [main]
 
-  # Allows you to run this workflow manually from the Actions tab
-  workflow_dispatch:
+    # Allows you to run this workflow manually from the Actions tab
+    workflow_dispatch:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build"
-  build:
-    # The type of runner that the job will run on
-    runs-on: ubuntu-latest
+    # This workflow contains a single job called "build"
+    build:
+        # The type of runner that the job will run on
+        runs-on: ubuntu-latest
 
-    # Steps represent a sequence of tasks that will be executed as part of the job
-    steps:
-      - uses: actions/checkout@v2
-      # Build the applications
-      - uses: nhartland/love-build@v1-beta2
-        with:
-         app_name: 'funkin_lua'
-         love_version: '11.4'
-      # Upload the built applications
-      - uses: actions/upload-artifact@v1
-        with:
-          name: built-applications
-          path: 'release'
+        # Steps represent a sequence of tasks that will be executed as part of the job
+        steps:
+            - uses: actions/checkout@v2
+            # Build the applications
+            - uses: nhartland/love-build@v1-beta2
+              with:
+                  app_name: "Funkin LUA"
+                  source_dir: "src"
+                  love_version: "11.4"
+            # Upload the built applications
+            - uses: actions/upload-artifact@v1
+              with:
+                  name: built-applications
+                  path: "release"
