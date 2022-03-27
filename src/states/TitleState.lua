@@ -6,9 +6,10 @@ local gf
 local logo
 local titleText
 
+local danceLeft = false
+
 function titlestate.load()
     gf = sprite.new(paths.atlas("gfDanceTitle"), 512, 40)
-    gf.danceLeft = false
     gf:addAnim("danceLeft", "gfDance",
                {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14}, 24, false)
     gf:addAnim("danceRight", "gfDance",
@@ -16,7 +17,7 @@ function titlestate.load()
                false)
     add(gf)
 
-    logo = sprite.new(paths.atlas("logoBumpin"), -150, -100)
+    logo = sprite.new(paths.atlas("logoBumpin"), -125, -85)
     logo:addAnim("bump", "logo bumpin instance ", nil, 24, false)
     add(logo)
 
@@ -39,11 +40,11 @@ function titlestate.draw()
     titleText:draw()
 end
 
-function titlestate.beatHit()
+function titlestate.beatHit(n)
     logo:playAnim("bump", true)
 
-    gf.danceLeft = not gf.danceLeft
-    if gf.danceLeft then
+    danceLeft = not danceLeft
+    if danceLeft then
         gf:playAnim("danceRight")
     else
         gf:playAnim("danceLeft")
@@ -53,7 +54,8 @@ end
 function titlestate.keypressed(key, scancode, isrepeat)
     if not isrepeat and key == "return" then
         utils.playSound(confirmSnd)
-        switchState(mainmenu)
+        titleText:playAnim("press")
+        -- switchState(mainmenu)
     end
 end
 

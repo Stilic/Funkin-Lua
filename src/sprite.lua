@@ -21,6 +21,7 @@ local Sprite = {
     curAnim = {
         name = "",
         frames = {},
+        indices = nil,
         length = 0,
         framerate = 24,
         loop = false,
@@ -53,11 +54,18 @@ function Sprite.loadImage(self, path)
 end
 
 function Sprite.update(self, dt)
-    if not self.destroyed then
-        if not self.paused then
+    if self.curAnim ~= nil and not self.destroyed then
+        local frame = self.curFrame + 10 * (dt * 1.75)
+        if not self.paused or
+            (self.curAnim.indices ~= nil and
+                tableHasValue(self.curAnim.frames, frame)) then
             self.curFrame = self.curFrame + 10 * (dt * 1.75)
-            if self.curFrame >= self.curAnim.length then
-                self.curFrame = 1
+            if self.curFrame >= self.curAnim.length - 1 then
+                if self.curAnim.loop then
+                    self.curFrame = 1
+                else
+                    self.curFrame = self.curAnim.length - 1
+                end
             end
         else
             self.curFrame = self.lastFrame
@@ -66,7 +74,7 @@ function Sprite.update(self, dt)
 end
 
 function Sprite.draw(self)
-    if not self.destroyed then
+    if self.curAnim ~= nil and not self.destroyed then
         local spriteNum = math.floor(self.curFrame)
         if not self.paused then
             spriteNum = spriteNum + 1
@@ -91,7 +99,6 @@ end
 
 function Sprite.addAnim(self, name, prefix, indices, framerate, loop)
     if not self.destroyed then
-        if indices == nil then indices = {} end
         if framerate == nil then framerate = 24 end
         if loop == nil then loop = true end
 
@@ -102,6 +109,7 @@ function Sprite.addAnim(self, name, prefix, indices, framerate, loop)
                 local anim = {
                     name = name,
                     frames = {},
+                    indices = indices,
                     length = 0,
                     framerate = framerate,
                     loop = loop
@@ -112,7 +120,8 @@ function Sprite.addAnim(self, name, prefix, indices, framerate, loop)
 
                     if string.sub(data["@name"], 1, string.len(prefix)) ==
                         prefix then
-                        if #indices == 0 or tableHasValue(indices, f) then
+                        if (indices == nil or indices == {}) or
+                            tableHasValue(indices, f) then
                             local frame = {
                                 quad = love.graphics.newQuad(data["@x"],
                                                              data["@y"],
