@@ -5,20 +5,10 @@ function utils.readFile(path)
     return contents
 end
 
-function utils.clearSprite(spr)
-    if spr.destroy ~= nil then
-        spr:destroy()
-    elseif spr.release ~= nil then
-        spr:release()
-    elseif spr.clear ~= nil then
-        spr:clear()
-    else
-        spr = nil
-    end
+function utils.callGroup(grp, func, ...)
+    for k, o in pairs(grp) do if o[func] ~= nil then o[func](o, ...) end end
 end
 
-function utils.playSound(sound)
-    TEsound.play(sound, "static")
-end
+function utils.playSound(sound) TEsound.play(sound, "static") end
 
 return utils

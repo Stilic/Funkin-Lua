@@ -1,7 +1,8 @@
 local mainmenu = {}
 
-local menuItems = lovegroup.new()
+local menuBG
 
+local menuItems = {}
 local options = {
     "story_mode", "freeplay",
     --[[i kept the donate button just because i might add a link to my paypal or something idk
@@ -11,22 +12,22 @@ local options = {
     "donate", "options"
 }
 
-local curSelected = 0
+local curSelected = 1
 
 function mainmenu.load()
     menuBG = paths.getImage("menuBG")
-    _c.add(menuBG)
+    add(menuBG)
 
-    -- for i = 1, #options do
-    --     local spr = sprite.new("mainmenu/menu_" .. options[i],
-    --                            love.graphics.getWidth() / 4, 50 + (i - 1) * 155)
-    --     spr:addAnim("idle", options[i] .. " basic")
-    --     spr:addAnim("selected", options[i] .. " white")
-    --     menuItems:add(spr)
-    -- end
+    for i = 1, #options do
+        local spr = sprite.new(paths.atlas("mainmenu/menu_" .. options[i]),
+                               love.graphics.getWidth() / 4, 50 + (i - 1) * 155)
+        spr:addAnim("idle", options[i] .. " basic")
+        spr:addAnim("selected", options[i] .. " white")
 
-    -- storymode = sprite.new(paths.image())
-    _c.add(menuItems)
+        table.insert(menuItems, spr)
+    end
+
+    add(menuItems)
 
     mainmenu.changeSelection(0)
 end
@@ -34,10 +35,10 @@ end
 function mainmenu.changeSelection(change)
     curSelected = curSelected + change
 
-    if curSelected >= menuItems.length then curSelected = 0 end
-    if curSelected < 0 then curSelected = menuItems.length - 1 end
+    if curSelected > #options then curSelected = 1 end
+    if curSelected < 1 then curSelected = #options end
 
-    for k, s in pairs(menuItems.sprites) do
+    for k, s in pairs(menuItems) do
         if k == curSelected then
             s:playAnim("selected")
         else
@@ -46,11 +47,11 @@ function mainmenu.changeSelection(change)
     end
 end
 
-function mainmenu.update(dt) menuItems:update(dt) end
+function mainmenu.update(dt) utils.callGroup(menuItems, "update", dt) end
 
 function mainmenu.draw()
     love.graphics.draw(menuBG, 0, 0, 0, 1.1, 1.1)
-    menuItems:draw()
+    utils.callGroup(menuItems, "draw")
 end
 
 function mainmenu.keypressed(key, scancode, isrepeat)
@@ -62,8 +63,8 @@ function mainmenu.keypressed(key, scancode, isrepeat)
             utils.playSound(scrollSnd)
             mainmenu.changeSelection(1)
         elseif key == "escape" then
-            menuItems:clear()
             utils.playSound(cancelSnd)
+            menuItems = {}
             switchState(titlestate)
         end
     end

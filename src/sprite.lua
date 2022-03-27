@@ -22,8 +22,6 @@ local Sprite = {
         name = "",
         frames = {},
         length = 0,
-        height = 0,
-        width = 0,
         framerate = 24,
         loop = false,
         finished = false
@@ -38,6 +36,11 @@ local function new(path, x, y)
     setmetatable(self, Sprite)
     self:loadImage(path)
     return self
+end
+
+local function tableHasValue(table, val)
+    for index, value in ipairs(table) do if value == val then return true end end
+    return false
 end
 
 function Sprite.loadImage(self, path)
@@ -75,25 +78,10 @@ function Sprite.draw(self)
         local frame = self.curAnim.frames[spriteNum]
         if frame == nil then frame = self.firstFrame end
 
-        -- very inspired from funkin-rewritten lol
-        local width
-        local height
-
-        if frame.offsets["width"] == 0 then
-            width = math.floor(frame.width / 2)
-        else
-            width = math.floor(frame.offsets["width"] / 2) + frame.offsets["x"]
-        end
-        if frame.offsets["height"] == 0 then
-            height = math.floor(frame.height / 2)
-        else
-            height = math.floor(frame.offsets["height"] / 2) +
-                         frame.offsets["y"]
-        end
-
         love.graphics.draw(self.gfx, frame.quad, self.x, self.y, self.angle,
-                           self.sizeX, self.sizeY, width + self.offsetX,
-                           height + self.offsetY)
+                           self.sizeX, self.sizeY,
+                           frame.offsets.x + self.offsetX,
+                           frame.offsets.y + self.offsetY)
 
         if not self.paused and spriteNum >= self.curAnim.length then
             self.curAnim.finished = true
@@ -103,7 +91,7 @@ end
 
 function Sprite.addAnim(self, name, prefix, indices, framerate, loop)
     if not self.destroyed then
-        if indices == nil then indices = {}; end
+        if indices == nil then indices = {} end
         if framerate == nil then framerate = 24 end
         if loop == nil then loop = true end
 
@@ -122,9 +110,9 @@ function Sprite.addAnim(self, name, prefix, indices, framerate, loop)
                 for f = 1, #self.xmlData do
                     local data = self.xmlData[f]
 
-                    if string.starts(data["@name"], prefix) then
-                        if table.length(indices) == 0 or
-                            table.has_value(indices, f) then
+                    if string.sub(data["@name"], 1, string.len(prefix)) ==
+                        prefix then
+                        if #indices == 0 or tableHasValue(indices, f) then
                             local frame = {
                                 quad = love.graphics.newQuad(data["@x"],
                                                              data["@y"],
@@ -154,10 +142,10 @@ function Sprite.addAnim(self, name, prefix, indices, framerate, loop)
                             end
 
                             frame.offsets = {
-                                ["x"] = offsetX,
-                                ["y"] = offsetY,
-                                ["width"] = offsetWidth,
-                                ["height"] = offsetHeight
+                                x = offsetX,
+                                y = offsetY,
+                                width = offsetWidth,
+                                height = offsetHeight
                             }
 
                             if self.firstFrame == nil then
@@ -229,11 +217,6 @@ function Sprite.destroy(self)
         self.lastFrame = 1
         self.gfx:release()
 
-        for a = 1, #self.animations do
-            for q = 1, #self.animations[a].frames do
-                self.animations[a].frames[q]:release()
-            end
-        end
         self.animations = {}
         self.firstFrame = nil
         self.xmlData = nil
