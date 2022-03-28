@@ -15,7 +15,7 @@ require "lib.tesound"
 
 -- load shit
 local fadeTween
-local fade = {y = 0, time = 1.5}
+local fade = {y = 0, time = 0.9}
 local fadeCallback
 local isLoading = false
 
@@ -86,7 +86,7 @@ function switchState(state, transition)
 
     if transition then
         isLoading = true
-        fade.y = -love.graphics.getHeight() * 13
+        fade.y = -love.graphics.getHeight() * 14
         fadeTween = tween.new(fade.time, fade, {y = 0}, "outQuad")
     else
         fadeCallback()
@@ -152,7 +152,7 @@ function love.draw()
 
     if isLoading then
         love.graphics.draw(gradient, 0, fade.y, 0, love.graphics.getWidth(),
-                           love.graphics.getHeight() * 12)
+                           love.graphics.getHeight() * 10)
     end
 end
 

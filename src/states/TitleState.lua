@@ -7,8 +7,12 @@ local logo
 local titleText
 
 local danceLeft = false
+local confirmed = false
 
 function titlestate.load()
+    danceLeft = false
+    confirmed = false
+
     gf = sprite.new(paths.atlas("gfDanceTitle"), 512, 40)
     gf:addAnim("danceLeft", "gfDance",
                {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14}, 24, false)
@@ -52,7 +56,8 @@ function titlestate.beatHit(n)
 end
 
 function titlestate.keypressed(key, scancode, isrepeat)
-    if not isrepeat and key == "return" then
+    if not isrepeat and not confirmed and key == "return" then
+        confirmed = true
         utils.playSound(confirmSnd)
         titleText:playAnim("press")
         tick.delay(function() switchState(mainmenu) end, 1)
