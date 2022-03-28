@@ -10,7 +10,9 @@ Arthur Animations/Code - Main idea, logo creator.
 
 # ⚠️!! FAQ !!⚠️
 ### Q: When is this gonna be done?
-### **_A: PLEASE, and we ask nicely, PLEASE FOR THE LOVE OF GOD, DON'T ASK THIS, CODE TAKES A WHILE TO MAKE, AND THERE'S ONLY ONE EXPERIENCED-ish LUA CODER IN THE TEAM. DO NOT PRESSURE US._**
+### _A: PLEASE, and we ask nicely, PLEASE FOR THE LOVE OF GOD, DON'T ASK THIS, CODE TAKES A WHILE TO MAKE, AND THERE'S ONLY ONE EXPERIENCED-ish LUA CODER IN THE TEAM. DO NOT PRESSURE US._
+### WE HAVE LIVES, WE DON'T CODE 24/7
+
 
 Q: Can we use this to make mods?
 
