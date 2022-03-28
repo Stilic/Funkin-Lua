@@ -7,6 +7,7 @@ _c = require "cache"
 
 local lovesize = require "lib.lovesize"
 local lovebpm = require "lib.lovebpm"
+local filesize = require "lib.filesize"
 tick = require "lib.tick"
 tween = require "lib.tween"
 -- json = require "lib.dkjson"
@@ -15,7 +16,7 @@ require "lib.tesound"
 local function drawScreenOverlay()
     love.graphics.print("FPS: " .. love.timer.getFPS() .. "\nMemory: " ..
                             math.floor(collectgarbage("count") * 0.1024) ..
-                            " MB", 8, 8)
+                            " MB", 7, 7)
 end
 
 -- transition shit
@@ -111,7 +112,7 @@ function love.load()
 
     flash = {alpha = 0, color = {255, 255, 255}}
 
-    vcrFont = love.graphics.newFont(paths.font("vcr.ttf"), 12, "light")
+    vcrFont = love.graphics.newFont(paths.font("vcr.ttf"), 14, "light")
     love.graphics.setFont(vcrFont)
 
     scrollSnd = love.sound.newSoundData(paths.sound("scrollMenu"))
