@@ -172,5 +172,7 @@ function love.draw()
 end
 
 function love.keypressed(key, scancode, isrepeat)
-    callState("keypressed", key, scancode, isrepeat)
+    if not isTransitioning then
+        callState("keypressed", key, scancode, isrepeat)
+    end
 end

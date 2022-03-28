@@ -63,7 +63,9 @@ function utils.gradientMesh(dir, ...)
 end
 
 function utils.callGroup(grp, func, ...)
-    for k, o in pairs(grp) do if o[func] ~= nil then o[func](o, ...) end end
+    for i = 1, #grp do
+        if grp[i][func] ~= nil then grp[i][func](grp[i], ...) end
+    end
 end
 
 function utils.playSound(sound) TEsound.play(sound, "static") end

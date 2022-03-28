@@ -1,41 +1,41 @@
 local xml = require("lib.xmlSimple").newParser()
 
-local Sprite = {
-    x = 0,
-    y = 0,
-    angle = 0,
-
-    sizeX = 1,
-    sizeY = 1,
-
-    offsetX = 0,
-    offsetY = 0,
-
-    paused = false,
-    destroyed = false,
-
-    path = nil,
-    xmlData = {},
-
-    animations = {},
-    firstFrame = nil,
-    curAnim = {
-        name = "",
-        frames = {},
-        indices = nil,
-        length = 0,
-        framerate = 24,
-        loop = false,
-        finished = false
-    },
-    curFrame = 1
-}
+local Sprite = {}
 Sprite.__index = Sprite
 
 images = {}
 
 local function new(path, x, y)
-    local self = {x = x, y = y}
+    local self = {
+        x = x,
+        y = y,
+        angle = 0,
+
+        sizeX = 1,
+        sizeY = 1,
+
+        offsetX = 0,
+        offsetY = 0,
+
+        paused = false,
+        destroyed = false,
+
+        path = nil,
+        xmlData = {},
+
+        animations = {},
+        firstFrame = nil,
+        curAnim = {
+            name = "",
+            frames = {},
+            indices = nil,
+            length = 0,
+            framerate = 24,
+            loop = false,
+            finished = false
+        },
+        curFrame = 0
+    }
     setmetatable(self, Sprite)
     self:loadImage(path)
     return self
@@ -46,7 +46,7 @@ local function tableHasValue(table, val)
     return false
 end
 
-function Sprite.loadImage(self, path)
+function Sprite:loadImage(path)
     self.path = path
 
     local lePath = path .. ".png"
@@ -60,7 +60,7 @@ function Sprite.loadImage(self, path)
     return self
 end
 
-function Sprite.update(self, dt)
+function Sprite:update(dt)
     if self.curAnim ~= nil and not self.destroyed then
         local frame = self.curFrame + 10 * (dt * self.curAnim.framerate / 10)
         if not self.paused or
@@ -69,7 +69,7 @@ function Sprite.update(self, dt)
             self.curFrame = frame
             if self.curFrame >= self.curAnim.length - 1 then
                 if self.curAnim.loop then
-                    self.curFrame = 1
+                    self.curFrame = 0
                 else
                     self.curFrame = self.curAnim.length - 1
                 end
@@ -78,7 +78,7 @@ function Sprite.update(self, dt)
     end
 end
 
-function Sprite.draw(self)
+function Sprite:draw()
     if self.curAnim ~= nil and not self.destroyed then
         local spriteNum = math.floor(self.curFrame)
         if not self.paused then spriteNum = spriteNum + 1 end
@@ -91,13 +91,12 @@ function Sprite.draw(self)
                            frame.offsets.x + self.offsetX,
                            frame.offsets.y + self.offsetY)
 
-        if not self.paused and spriteNum >= self.curAnim.length then
-            self.curAnim.finished = true
-        end
+        if not self.paused and not self.curAnim.loop and spriteNum >=
+            self.curAnim.length then self.curAnim.finished = true end
     end
 end
 
-function Sprite.addAnim(self, name, prefix, indices, framerate, loop)
+function Sprite:addAnim(name, prefix, indices, framerate, loop)
     if not self.destroyed then
         if framerate == nil then framerate = 24 end
         if loop == nil then loop = true end
@@ -176,7 +175,7 @@ function Sprite.addAnim(self, name, prefix, indices, framerate, loop)
     return self
 end
 
-function Sprite.removeAnim(self, name)
+function Sprite:removeAnim(name)
     if self.animations[name] ~= nil then
         if self.curAnim.name == name then self:stop() end
         self.animations[name] = nil
@@ -184,7 +183,7 @@ function Sprite.removeAnim(self, name)
     return self
 end
 
-function Sprite.playAnim(self, anim, forced)
+function Sprite:playAnim(anim, forced)
     if forced == nil then forced = false end
 
     if not self.destroyed and not self.paused and self.animations[anim] ~= nil then
@@ -194,33 +193,33 @@ function Sprite.playAnim(self, anim, forced)
             self.curAnim = self.animations[anim]
         end
         self.curAnim.finished = false
-        self.curFrame = 1
+        self.curFrame = 0
     end
 
     return self
 end
 
-function Sprite.getCurrentAnim(self) return self.curAnim end
+function Sprite:getCurrentAnim() return self.curAnim end
 
-function Sprite.pause(self)
+function Sprite:pause()
     self.paused = true
     return self
 end
 
-function Sprite.play(self)
+function Sprite:play()
     self.paused = false
     return self
 end
 
-function Sprite.stop(self)
+function Sprite:stop()
     self.curAnim = nil
     return self
 end
 
-function Sprite.destroy(self)
+function Sprite:destroy()
     if not self.destroyed then
         self:stop()
-        self.curFrame = 1
+        self.curFrame = 0
 
         images[self.path .. ".png"] = nil
 
@@ -236,4 +235,5 @@ function Sprite.destroy(self)
     return self
 end
 
-return {new = new, images = images, __object = Sprite}
+return setmetatable({new = new, images = images},
+                    {__call = function(_, ...) return new(...) end})
