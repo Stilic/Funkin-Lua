@@ -123,6 +123,8 @@ function love.load()
     BGMusic = lovebpm.newTrack():load(paths.music("freakyMenu")):setVolume(0.7)
                   :setBPM(102):setLooping(true):on("beat", love.beatHit)
     playBGMusic()
+
+    collectgarbage("collect")
 end
 
 function love.resize(width, height) lovesize.resize(width, height) end
