@@ -12,9 +12,9 @@ function utils.remove(obj)
         obj:release()
     elseif obj.clear ~= nil then
         obj:clear()
-    else
-        obj = nil
     end
+
+    obj = nil
 end
 
 function utils.gradientMesh(dir, ...)

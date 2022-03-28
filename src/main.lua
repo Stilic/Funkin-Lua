@@ -13,7 +13,9 @@ tween = require "lib.tween"
 require "lib.tesound"
 
 local function drawScreenOverlay()
-    love.graphics.print("FPS: " .. love.timer.getFPS(), 5, 5)
+    love.graphics.print("FPS: " .. love.timer.getFPS() .. "\nMemory: " ..
+                            math.floor(collectgarbage("count") * 0.1024) ..
+                            " MB", 8, 8)
 end
 
 -- transition shit
@@ -80,6 +82,8 @@ function switchState(state, transition)
 
         if transTween ~= nil then transTween:reset() end
         if flash.tween ~= nil then flash.tween:reset() end
+
+        collectgarbage("collect")
     end
 
     if transition then

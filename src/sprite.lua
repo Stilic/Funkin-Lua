@@ -14,11 +14,11 @@ local Sprite = {
     paused = false,
     destroyed = false,
 
-    gfx = nil,
+    path = nil,
     xmlData = {},
+
     animations = {},
     firstFrame = nil,
-
     curAnim = {
         name = "",
         frames = {},
@@ -28,9 +28,11 @@ local Sprite = {
         loop = false,
         finished = false
     },
-    curFrame = 1,
+    curFrame = 1
 }
 Sprite.__index = Sprite
+
+images = {}
 
 local function new(path, x, y)
     local self = {x = x, y = y}
@@ -45,7 +47,12 @@ local function tableHasValue(table, val)
 end
 
 function Sprite.loadImage(self, path)
-    self.gfx = love.graphics.newImage(path .. ".png")
+    self.path = path
+
+    local lePath = path .. ".png"
+    if images[lePath] == nil then
+        images[lePath] = love.graphics.newImage(lePath)
+    end
 
     local contents, size = love.filesystem.read(path .. ".xml")
     self.xmlData = xml:ParseXmlText(contents).TextureAtlas.SubTexture
@@ -74,15 +81,13 @@ end
 function Sprite.draw(self)
     if self.curAnim ~= nil and not self.destroyed then
         local spriteNum = math.floor(self.curFrame)
-        if not self.paused then
-            spriteNum = spriteNum + 1
-        end
+        if not self.paused then spriteNum = spriteNum + 1 end
 
         local frame = self.curAnim.frames[spriteNum]
         if frame == nil then frame = self.firstFrame end
 
-        love.graphics.draw(self.gfx, frame.quad, self.x, self.y, self.angle,
-                           self.sizeX, self.sizeY,
+        love.graphics.draw(images[self.path .. ".png"], frame.quad, self.x,
+                           self.y, self.angle, self.sizeX, self.sizeY,
                            frame.offsets.x + self.offsetX,
                            frame.offsets.y + self.offsetY)
 
@@ -122,7 +127,8 @@ function Sprite.addAnim(self, name, prefix, indices, framerate, loop)
                                                              data["@y"],
                                                              data["@width"],
                                                              data["@height"],
-                                                             self.gfx:getDimensions())
+                                                             images[self.path ..
+                                                                 ".png"]:getDimensions())
                             }
 
                             local offsetX = data["@frameX"]
@@ -215,7 +221,8 @@ function Sprite.destroy(self)
     if not self.destroyed then
         self:stop()
         self.curFrame = 1
-        self.gfx:release()
+
+        images[self.path .. ".png"] = nil
 
         self.animations = {}
         self.firstFrame = nil
@@ -229,7 +236,4 @@ function Sprite.destroy(self)
     return self
 end
 
-return {
-    new = new, -- constructor
-    __object = Sprite -- object table/metatable
-}
+return {new = new, images = images, __object = Sprite}
