@@ -18,6 +18,7 @@ local Sprite = {
     xmlData = {},
     animations = {},
     firstFrame = nil,
+
     curAnim = {
         name = "",
         frames = {},
@@ -28,7 +29,6 @@ local Sprite = {
         finished = false
     },
     curFrame = 1,
-    lastFrame = 1
 }
 Sprite.__index = Sprite
 
@@ -55,11 +55,11 @@ end
 
 function Sprite.update(self, dt)
     if self.curAnim ~= nil and not self.destroyed then
-        local frame = self.curFrame + 10 * (dt * 1.75)
+        local frame = self.curFrame + 10 * (dt * self.curAnim.framerate / 10)
         if not self.paused or
             (self.curAnim.indices ~= nil and
                 tableHasValue(self.curAnim.frames, frame)) then
-            self.curFrame = self.curFrame + 10 * (dt * 1.75)
+            self.curFrame = frame
             if self.curFrame >= self.curAnim.length - 1 then
                 if self.curAnim.loop then
                     self.curFrame = 1
@@ -67,8 +67,6 @@ function Sprite.update(self, dt)
                     self.curFrame = self.curAnim.length - 1
                 end
             end
-        else
-            self.curFrame = self.lastFrame
         end
     end
 end
@@ -78,9 +76,6 @@ function Sprite.draw(self)
         local spriteNum = math.floor(self.curFrame)
         if not self.paused then
             spriteNum = spriteNum + 1
-            self.lastFrame = spriteNum
-        else
-            spriteNum = self.lastFrame
         end
 
         local frame = self.curAnim.frames[spriteNum]
@@ -127,9 +122,7 @@ function Sprite.addAnim(self, name, prefix, indices, framerate, loop)
                                                              data["@y"],
                                                              data["@width"],
                                                              data["@height"],
-                                                             self.gfx:getDimensions()),
-                                width = data["@width"],
-                                height = data["@height"]
+                                                             self.gfx:getDimensions())
                             }
 
                             local offsetX = data["@frameX"]
@@ -196,7 +189,6 @@ function Sprite.playAnim(self, anim, forced)
         end
         self.curAnim.finished = false
         self.curFrame = 1
-        self.lastFrame = 1
     end
 
     return self
@@ -223,7 +215,6 @@ function Sprite.destroy(self)
     if not self.destroyed then
         self:stop()
         self.curFrame = 1
-        self.lastFrame = 1
         self.gfx:release()
 
         self.animations = {}

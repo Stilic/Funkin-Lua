@@ -2,12 +2,8 @@ local titlestate = {}
 
 local mainmenu = require "states.MainMenuState"
 
-local gf
-local logo
-local titleText
-
-local danceLeft = false
-local confirmed = false
+local danceLeft
+local confirmed
 
 function titlestate.load()
     danceLeft = false
@@ -30,6 +26,8 @@ function titlestate.load()
     titleText:addAnim("press", "ENTER PRESSED")
     titleText:playAnim("idle")
     _c.add(titleText)
+
+    screenFlash(2)
 end
 
 function titlestate.update(dt)
@@ -58,8 +56,11 @@ end
 function titlestate.keypressed(key, scancode, isrepeat)
     if not isrepeat and not confirmed and key == "return" then
         confirmed = true
+
         utils.playSound(confirmSnd)
         titleText:playAnim("press")
+        screenFlash()
+
         tick.delay(function() switchState(mainmenu) end, 1)
     end
 end

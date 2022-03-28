@@ -1,7 +1,5 @@
 local mainmenu = {}
 
-local menuBG
-
 local options = {"story_mode", "freeplay", "donate", "options"}
 local curSelected = 1
 
