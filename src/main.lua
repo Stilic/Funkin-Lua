@@ -19,51 +19,6 @@ local fade = {y = 0, time = 0.9}
 local fadeCallback
 local isLoading = false
 
-local function gradientMesh(dir, ...)
-    -- Check for direction
-    local isHorizontal = true
-    if dir == "vertical" then
-        isHorizontal = false
-    elseif dir ~= "horizontal" then
-        error("bad argument #1 to 'gradient' (invalid value)", 2)
-    end
-
-    -- Check for colors
-    local colorLen = select("#", ...)
-    if colorLen < 2 then error("color list is less than two", 2) end
-
-    -- Generate mesh
-    local meshData = {}
-    if isHorizontal then
-        for i = 1, colorLen do
-            local color = select(i, ...)
-            local x = (i - 1) / (colorLen - 1)
-
-            meshData[#meshData + 1] = {
-                x, 1, x, 1, color[1], color[2], color[3], color[4] or 1
-            }
-            meshData[#meshData + 1] = {
-                x, 0, x, 0, color[1], color[2], color[3], color[4] or 1
-            }
-        end
-    else
-        for i = 1, colorLen do
-            local color = select(i, ...)
-            local y = (i - 1) / (colorLen - 1)
-
-            meshData[#meshData + 1] = {
-                1, y, 1, y, color[1], color[2], color[3], color[4] or 1
-            }
-            meshData[#meshData + 1] = {
-                0, y, 0, y, color[1], color[2], color[3], color[4] or 1
-            }
-        end
-    end
-
-    -- Resulting Mesh has 1x1 image size
-    return love.graphics.newMesh(meshData, "strip", "static")
-end
-
 local gradient
 
 -- state shit
@@ -86,7 +41,7 @@ function switchState(state, transition)
 
     if transition then
         isLoading = true
-        fade.y = -love.graphics.getHeight() * 14
+        fade.y = -love.graphics.getHeight() * 16
         fadeTween = tween.new(fade.time, fade, {y = 0}, "outQuad")
     else
         fadeCallback()
@@ -109,7 +64,10 @@ function love.load()
     lovesize.set(1280, 720)
     love.keyboard.setKeyRepeat(true)
 
-    gradient = gradientMesh("vertical", {0, 0, 0, 1}, {0, 0, 0, 0.1})
+    gradient = utils.gradientMesh("vertical", {0, 0, 0, 1}, {0, 0, 0, 0.1})
+
+    vcrFont = love.graphics.newFont(paths.font("vcr.ttf"), 12, "light")
+    love.graphics.setFont(vcrFont)
 
     scrollSnd = love.sound.newSoundData(paths.sound("scrollMenu"))
     confirmSnd = love.sound.newSoundData(paths.sound("confirmMenu"))
@@ -133,8 +91,6 @@ function love.update(dt)
 
     if fadeTween ~= nil then
         if fadeTween:update(dt) then
-            love.graphics.clear()
-            love.graphics.present()
             fadeCallback()
             fadeCallback = nil
             fadeTween = nil
@@ -152,8 +108,10 @@ function love.draw()
 
     if isLoading then
         love.graphics.draw(gradient, 0, fade.y, 0, love.graphics.getWidth(),
-                           love.graphics.getHeight() * 10)
+                           love.graphics.getHeight() * 14)
     end
+
+    love.graphics.print("FPS: " .. love.timer.getFPS(), 5, 5)
 end
 
 function love.keypressed(key, scancode, isrepeat)
