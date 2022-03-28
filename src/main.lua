@@ -7,7 +7,6 @@ _c = require "cache"
 
 local lovesize = require "lib.lovesize"
 local lovebpm = require "lib.lovebpm"
-local filesize = require "lib.filesize"
 tick = require "lib.tick"
 tween = require "lib.tween"
 -- json = require "lib.dkjson"
