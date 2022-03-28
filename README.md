@@ -4,9 +4,9 @@ A FNF (Friday Night Funkin') Engine, made all in LUA via LÖVE!
 
 ## Credits
 
-Arthur Animations/Codes (Hey, that's me!) - Main idea and code
+Stilic - Newer repo owner, he's very cool
 
-Stilic - ALOT of contribiution to the code, helped with the xml parser and other shit
+Arthur Animations/Code - Main idea and smallest tiny bit of code
 
 ## ⚠️!! FAQ !!⚠️
 Q: Can we use this to make mods?
