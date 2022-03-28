@@ -1,9 +1,9 @@
 io.stdout:setvbuf("no")
 
-paths = require "src/paths"
-utils = require "src/utils"
-sprite = require "src/sprite"
-_c = require "src/cache"
+paths = require "paths"
+utils = require "utils"
+sprite = require "sprite"
+_c = require "cache"
 
 local lovesize = require "lib.lovesize"
 local lovebpm = require "lib.lovebpm"
