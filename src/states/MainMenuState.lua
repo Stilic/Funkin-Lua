@@ -15,9 +15,10 @@ local function changeSelection(change)
 
     for i = 1, #menuItems do
         if i == curSelected then
-            menuItems[i]:playAnim("selected", true)
+            menuItems[i]:playAnim("selected")
+            -- menuItems[i]:centerOffsets()
         else
-            menuItems[i]:playAnim("idle", true)
+            menuItems[i]:playAnim("idle")
         end
     end
 end
