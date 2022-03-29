@@ -16,6 +16,7 @@ local function new(path, x, y)
 
         offsetX = 0,
         offsetY = 0,
+        centerOffsets = false,
 
         paused = false,
         destroyed = false,
@@ -28,13 +29,14 @@ local function new(path, x, y)
         curAnim = {
             name = "",
             frames = {},
-            indices = nil,
+            indices = {},
+            offsets = {},
             length = 0,
             framerate = 24,
             loop = false,
             finished = false
         },
-        curFrame = 0
+        curFrame = 1
     }
     setmetatable(self, Sprite)
     self:loadImage(path)
@@ -42,11 +44,7 @@ local function new(path, x, y)
 end
 
 local function tableHasValue(table, val)
-    for index, value in ipairs(table) do
-        if value == val then
-            return true
-        end
-    end
+    for index, value in ipairs(table) do if value == val then return true end end
     return false
 end
 
@@ -66,8 +64,10 @@ end
 
 function Sprite:update(dt)
     if self.curAnim ~= nil and not self.destroyed then
-        local frame = self.curFrame + 10 * (dt * self.curAnim.framerate / 10)
-        if not self.paused or (self.curAnim.indices ~= nil and tableHasValue(self.curAnim.frames, frame)) then
+        local frame = self.curFrame + dt * self.curAnim.framerate
+        if not self.paused or
+            (self.curAnim.indices ~= nil and
+                tableHasValue(self.curAnim.frames, frame)) then
             self.curFrame = frame
             if self.curFrame >= self.curAnim.length - 1 then
                 if self.curAnim.loop then
@@ -83,21 +83,26 @@ end
 function Sprite:draw()
     if self.curAnim ~= nil and not self.destroyed then
         local spriteNum = math.floor(self.curFrame)
-        if not self.paused then
-            spriteNum = spriteNum + 1
-        end
+        if not self.paused then spriteNum = spriteNum + 1 end
 
         local frame = self.curAnim.frames[spriteNum]
-        if frame == nil then
-            frame = self.firstFrame
+        if frame == nil then frame = self.firstFrame end
+
+        local centerX = 0
+        local centerY = 0
+        -- LOL SO CRINGE WORK I DONE
+        if self.centerOffsets then
+            centerX = frame.width / 2
+            centerY = -frame.height / 35 + frame.height / 3
         end
 
-        love.graphics.draw(images[self.path .. ".png"], frame.quad, self.x, self.y, self.angle, self.sizeX, self.sizeY,
-            frame.offsets.x - self.offsetX, frame.offsets.y - self.offsetY)
+        love.graphics.draw(images[self.path .. ".png"], frame.quad, self.x,
+                           self.y, self.angle, self.sizeX, self.sizeY,
+                           frame.offsets.x + centerX + self.offsetX,
+                           frame.offsets.y + centerY + self.offsetY)
 
-        if not self.paused and not self.curAnim.loop and spriteNum >= self.curAnim.length then
-            self.curAnim.finished = true
-        end
+        if not self.paused and not self.curAnim.loop and spriteNum >=
+            self.curAnim.length then self.curAnim.finished = true end
     end
 end
 
@@ -111,12 +116,8 @@ end
 
 function Sprite:__addAnim(name, prefix, indices, framerate, loop)
     if not self.destroyed then
-        if framerate == nil then
-            framerate = 24
-        end
-        if loop == nil then
-            loop = true
-        end
+        if framerate == nil then framerate = 24 end
+        if loop == nil then loop = true end
 
         local anim = {
             name = name,
@@ -131,22 +132,21 @@ function Sprite:__addAnim(name, prefix, indices, framerate, loop)
             local data = self.xmlData[f]
 
             if string.sub(data["@name"], 1, string.len(prefix)) == prefix then
-                if (indices == nil or indices == {}) or tableHasValue(indices, f) then
+                if (indices == nil or indices == {}) or
+                    tableHasValue(indices, f) then
                     local frame = {
-                        quad = love.graphics.newQuad(data["@x"], data["@y"], data["@width"], data["@height"],
-                            images[self.path .. ".png"]:getDimensions()),
+                        quad = love.graphics.newQuad(data["@x"], data["@y"],
+                                                     data["@width"],
+                                                     data["@height"],
+                                                     images[self.path .. ".png"]:getDimensions()),
                         width = data["@width"],
                         height = data["@height"]
                     }
 
                     local offsetX = data["@frameX"]
-                    if offsetX == nil then
-                        offsetX = 0
-                    end
+                    if offsetX == nil then offsetX = 0 end
                     local offsetY = data["@frameY"]
-                    if offsetY == nil then
-                        offsetY = 0
-                    end
+                    if offsetY == nil then offsetY = 0 end
 
                     local offsetWidth = data["@frameWidth"]
                     if offsetWidth == nil then
@@ -182,23 +182,17 @@ end
 
 function Sprite:removeAnim(name)
     if self.animations[name] ~= nil then
-        if self.curAnim.name == name then
-            self:stop()
-        end
+        if self.curAnim.name == name then self:stop() end
         self.animations[name] = nil
     end
     return self
 end
 
 function Sprite:playAnim(anim, forced)
-    if forced == nil then
-        forced = false
-    end
+    if forced == nil then forced = false end
 
     if not self.destroyed and not self.paused and self.animations[anim] ~= nil then
-        if not forced and anim == self.curAnim.name then
-            return
-        end
+        if not forced and anim == self.curAnim.name then return end
 
         if anim ~= self.curAnim.name then
             self.curAnim = self.animations[anim]
@@ -208,19 +202,6 @@ function Sprite:playAnim(anim, forced)
     end
 
     return self
-end
-
--- function Sprite:centerOffsets()
---     if self.curAnim ~= nil then
---         self.offsetX = (self.curAnim.frames[0].offsets.width - self.curAnim.frames[0].width) *
---                            0.5
---         self.offsetY = (self.curAnim.frames[0].offsets.height - self.curAnim.frames[0].height) *
---                            0.5
---     end
--- end
-
-function Sprite:getCurrentAnim()
-    return self.curAnim
 end
 
 function Sprite:pause()
@@ -257,11 +238,5 @@ function Sprite:destroy()
     return self
 end
 
-return setmetatable({
-    new = new,
-    images = images
-}, {
-    __call = function(_, ...)
-        return new(...)
-    end
-})
+return setmetatable({new = new, images = images},
+                    {__call = function(_, ...) return new(...) end})
