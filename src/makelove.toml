@@ -1,0 +1,8 @@
+name = "Funkin LUA"
+default_targets = ["win32", "win64"]
+build_directory = "../build"
+
+love_files = [
+    "::git-ls-tree::",
+    "-*/.*",
+]

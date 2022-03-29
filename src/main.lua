@@ -43,7 +43,6 @@ local function startTransition(out)
     transTween = tween.new(trans.time, trans, tweenData)
 end
 
--- cringe shit idk
 function screenFlash(duration, r, g, b)
     if duration == nil then duration = 0.6 end
     if r == nil then r = 255 end
