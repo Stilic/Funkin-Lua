@@ -1,5 +1,7 @@
 local mainmenu = {}
 
+local OptionsSubState = require "states.OptionsSubState"
+
 local options = {"story_mode", "freeplay", "donate", "options"}
 local curSelected = 1
 
@@ -60,7 +62,9 @@ function mainmenu.keypressed(key, scancode, isrepeat)
             utils.playSound(confirmSnd)
             if curSelected == 3 then
                 love.system.openURL("https://ninja-muffin24.itch.io/funkin")
-            end
+        elseif curSelected == 4 then
+                tick.delay(function() switchState(OptionsSubState) end, 1)
+        end
         elseif key == "escape" then
             utils.playSound(cancelSnd)
             switchState(titlestate)
