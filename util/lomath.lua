@@ -11,11 +11,14 @@ function lomath.averageAngles(...)
 end
 
 -- Returns the distance between two points.
-function lomath.dist(x1, y1, x2, y2) return
-    ((x2 - x1) ^ 2 + (y2 - y1) ^ 2) ^ 0.5 end
+function lomath.dist(x1, y1, x2, y2)
+    return ((x2 - x1) ^ 2 + (y2 - y1) ^ 2) ^ 0.5
+end
 
 -- Returns the angle between two vectors assuming the same origin.
-function lomath.angle(x1, y1, x2, y2) return math.atan2(y2 - y1, x2 - x1) end
+function lomath.angle(x1, y1, x2, y2)
+    return math.atan2(y2 - y1, x2 - x1)
+end
 
 -- Returns the closest multiple of 'size' (defaulting to 10).
 function lomath.multiple(n, size)
@@ -24,11 +27,17 @@ function lomath.multiple(n, size)
 end
 
 -- Clamps a number to within a certain range.
-function lomath.clamp(low, n, high) return math.min(math.max(low, n), high) end
+function lomath.clamp(low, n, high)
+    return math.min(math.max(low, n), high)
+end
 
 -- Linear interpolation between two numbers.
-function lerp(a, b, t) return (1 - t) * a + t * b end
-function lerp2(a, b, t) return a + (b - a) * t end
+function lerp(a, b, t)
+    return (1 - t) * a + t * b
+end
+function lerp2(a, b, t)
+    return a + (b - a) * t
+end
 
 -- Cosine interpolation between two numbers.
 function cerp(a, b, t)
@@ -53,19 +62,24 @@ function lomath.round(n, deci)
 end
 
 -- Randomly returns either -1 or 1.
-function lomath.rsign() return love.math.random(2) == 2 and 1 or -1 end
+function lomath.rsign()
+    return love.math.random(2) == 2 and 1 or -1
+end
 
 -- Returns 1 if number is positive, -1 if it's negative, or 0 if it's 0.
-function lomath.sign(n) return n > 0 and 1 or n < 0 and -1 or 0 end
+function lomath.sign(n)
+    return n > 0 and 1 or n < 0 and -1 or 0
+end
 
 -- Gives a precise random decimal number given a minimum and maximum
-function lomath.prandom(min, max) return love.math.random() * (max - min) + min end
+function lomath.prandom(min, max)
+    return love.math.random() * (max - min) + min
+end
 
 -- Checks if two line segments intersect. Line segments are given in form of ({x,y},{x,y}, {x,y},{x,y}).
 function checkIntersect(l1p1, l1p2, l2p1, l2p2)
     local function checkDir(pt1, pt2, pt3)
-        return lomath.sign(((pt2.x - pt1.x) * (pt3.y - pt1.y)) -
-                               ((pt3.x - pt1.x) * (pt2.y - pt1.y)))
+        return lomath.sign(((pt2.x - pt1.x) * (pt3.y - pt1.y)) - ((pt3.x - pt1.x) * (pt2.y - pt1.y)))
     end
     return (checkDir(l1p1, l1p2, l2p1) ~= checkDir(l1p1, l1p2, l2p2)) and
                (checkDir(l2p1, l2p2, l1p1) ~= checkDir(l2p1, l2p2, l1p2))
@@ -73,22 +87,21 @@ end
 
 -- Checks if two lines intersect (or line segments if seg is true)
 -- Lines are given as four numbers (two coordinates)
-function findIntersect(l1p1x, l1p1y, l1p2x, l1p2y, l2p1x, l2p1y, l2p2x, l2p2y,
-                       seg1, seg2)
-    local a1, b1, a2, b2 = l1p2y - l1p1y, l1p1x - l1p2x, l2p2y - l2p1y,
-                           l2p1x - l2p2x
+function findIntersect(l1p1x, l1p1y, l1p2x, l1p2y, l2p1x, l2p1y, l2p2x, l2p2y, seg1, seg2)
+    local a1, b1, a2, b2 = l1p2y - l1p1y, l1p1x - l1p2x, l2p2y - l2p1y, l2p1x - l2p2x
     local c1, c2 = a1 * l1p1x + b1 * l1p1y, a2 * l2p1x + b2 * l2p1y
     ---@diagnostic disable-next-line: unbalanced-assignments
     local det, x, y = a1 * b2 - a2 * b1
-    if det == 0 then return false, "The lines are parallel." end
+    if det == 0 then
+        return false, "The lines are parallel."
+    end
     x, y = (b2 * c1 - b1 * c2) / det, (a1 * c2 - a2 * c1) / det
     if seg1 or seg2 then
         local min, max = math.min, math.max
         if seg1 and
-            not (min(l1p1x, l1p2x) <= x and x <= max(l1p1x, l1p2x) and
-                min(l1p1y, l1p2y) <= y and y <= max(l1p1y, l1p2y)) or seg2 and
-            not (min(l2p1x, l2p2x) <= x and x <= max(l2p1x, l2p2x) and
-                min(l2p1y, l2p2y) <= y and y <= max(l2p1y, l2p2y)) then
+            not (min(l1p1x, l1p2x) <= x and x <= max(l1p1x, l1p2x) and min(l1p1y, l1p2y) <= y and y <= max(l1p1y, l1p2y)) or
+            seg2 and
+            not (min(l2p1x, l2p2x) <= x and x <= max(l2p1x, l2p2x) and min(l2p1y, l2p2y) <= y and y <= max(l2p1y, l2p2y)) then
             return false, "The lines don't intersect."
         end
     end

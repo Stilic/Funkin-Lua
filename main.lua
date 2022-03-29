@@ -18,14 +18,16 @@ tween = require "lib.tween"
 require "lib.tesound"
 
 local function drawScreenOverlay()
-    love.graphics.print("FPS: " .. love.timer.getFPS() .. "\nMemory: " ..
-                            math.floor(collectgarbage("count") * 0.1024) ..
-                            " MB", 7, 7)
+    love.graphics.print(
+        "FPS: " .. love.timer.getFPS() .. "\nMemory: " .. math.floor(collectgarbage("count") * 0.1024) .. " MB", 7, 7)
 end
 
 -- transition shit
 local transTween
-local trans = {y = 0, time = 0.8}
+local trans = {
+    y = 0,
+    time = 0.8
+}
 local transCallback
 
 isTransitioning = false
@@ -38,11 +40,15 @@ local function startTransition(out)
     if out then
         gradient = utils.gradientMesh("vertical", {0, 0, 0, 1}, {0, 0, 0, 0})
         trans.y = -love.graphics.getHeight() * 14
-        tweenData = {y = 0}
+        tweenData = {
+            y = 0
+        }
     else
         gradient = utils.gradientMesh("vertical", {0, 0, 0, 0}, {0, 0, 0, 1})
         trans.y = -love.graphics.getHeight() * 12
-        tweenData = {y = love.graphics.getHeight() * 2}
+        tweenData = {
+            y = love.graphics.getHeight() * 2
+        }
     end
 
     isTransitioning = true
@@ -52,14 +58,24 @@ local function startTransition(out)
 end
 
 function screenFlash(duration, r, g, b)
-    if duration == nil then duration = 0.6 end
-    if r == nil then r = 255 end
-    if g == nil then g = 255 end
-    if b == nil then b = 255 end
+    if duration == nil then
+        duration = 0.6
+    end
+    if r == nil then
+        r = 255
+    end
+    if g == nil then
+        g = 255
+    end
+    if b == nil then
+        b = 255
+    end
 
     flash.alpha = 1
     flash.color = {r, g, b}
-    flash.tween = tween.new(duration, flash, {alpha = 0})
+    flash.tween = tween.new(duration, flash, {
+        alpha = 0
+    })
 end
 
 -- state shit
@@ -69,13 +85,17 @@ mainmenu = require "game.states.MainMenuState"
 local curState = titlescreen
 
 local function callState(func, ...)
-    if curState[func] ~= nil then curState[func](...) end
+    if curState[func] ~= nil then
+        curState[func](...)
+    end
 end
 
 function switchState(state, transition)
     assert(state ~= nil, "The state is nil!")
 
-    if transition == nil then transition = true end
+    if transition == nil then
+        transition = true
+    end
 
     transCallback = function()
         love.graphics.clear()
@@ -87,14 +107,20 @@ function switchState(state, transition)
         flash.alpha = 0
         flash.tween = nil
 
-        for i = 1, #sprite.images do sprite.images[i]:release() end
+        for i = 1, #sprite.images do
+            sprite.images[i]:release()
+        end
         _c.clear()
 
         curState = state
         callState("load")
 
-        if transTween ~= nil then transTween:reset() end
-        if flash.tween ~= nil then flash.tween:reset() end
+        if transTween ~= nil then
+            transTween:reset()
+        end
+        if flash.tween ~= nil then
+            flash.tween:reset()
+        end
 
         collectgarbage("collect")
     end
@@ -106,7 +132,9 @@ function switchState(state, transition)
     end
 end
 
-function resetState() switchState(curState) end
+function resetState()
+    switchState(curState)
+end
 
 function playBGMusic()
     BGMusic:play()
@@ -122,7 +150,10 @@ function love.load()
     lovesize.set(1280, 720)
     love.keyboard.setKeyRepeat(true)
 
-    flash = {alpha = 0, color = {255, 255, 255}}
+    flash = {
+        alpha = 0,
+        color = {255, 255, 255}
+    }
 
     vcrFont = love.graphics.newFont(paths.font("vcr.ttf"), 14, "light")
     love.graphics.setFont(vcrFont)
@@ -133,14 +164,18 @@ function love.load()
 
     callState("load")
 
-    BGMusic = lovebpm.newTrack():load(paths.music("freakyMenu")):setVolume(0.7)
-                  :setBPM(102):setLooping(true):on("beat", love.beatHit)
+    BGMusic = lovebpm.newTrack():load(paths.music("freakyMenu")):setVolume(0.7):setBPM(102):setLooping(true):on("beat",
+        love.beatHit)
     playBGMusic()
 end
 
-function love.resize(width, height) lovesize.resize(width, height) end
+function love.resize(width, height)
+    lovesize.resize(width, height)
+end
 
-function love.beatHit(n) callState("beatHit", n) end
+function love.beatHit(n)
+    callState("beatHit", n)
+end
 
 function love.update(dt)
     tick.update(dt)
@@ -158,7 +193,9 @@ function love.update(dt)
         end
     end
 
-    if flash.tween ~= nil then flash.tween:update(dt) end
+    if flash.tween ~= nil then
+        flash.tween:update(dt)
+    end
 end
 
 function love.draw()
@@ -168,11 +205,10 @@ function love.draw()
 
     if isTransitioning then
         love.graphics.draw(gradient, 0, trans.y, 0, love.graphics.getWidth(),
-                           love.graphics.getHeight() * (transOut and 11 or 13))
+            love.graphics.getHeight() * (transOut and 11 or 13))
     end
     if flash.alpha > 0 then
-        love.graphics.setColor(flash.color[1], flash.color[2], flash.color[3],
-                               flash.alpha)
+        love.graphics.setColor(flash.color[1], flash.color[2], flash.color[3], flash.alpha)
         love.graphics.rectangle("fill", 0, 0, love.graphics.getDimensions())
         love.graphics.setColor(255, 255, 255)
     end
