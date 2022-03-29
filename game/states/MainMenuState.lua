@@ -9,7 +9,7 @@ local curSelected = 1
 
 local confirmed
 local confirmTick
-local shouldDraw
+local shouldDrawMenu
 
 local function changeSelection(change)
     curSelected = curSelected + change
@@ -30,7 +30,7 @@ function MainMenuState.load()
     menuItems = {}
 
     confirmed = false
-    shouldDraw = true
+    shouldDrawMenu = true
 
     menuBG = paths.getImage("menuBG")
     _c.add(menuBG)
@@ -57,7 +57,7 @@ function MainMenuState.draw()
     love.graphics.setColor(255, 255, 255)
 
     if not confirmed then utils.callGroup(menuItems, "draw") end
-    if confirmed and shouldDraw then menuItems[curSelected]:draw() end
+    if confirmed and shouldDrawMenu then menuItems[curSelected]:draw() end
 end
 
 function MainMenuState.keypressed(key, scancode, isrepeat)
@@ -78,9 +78,9 @@ function MainMenuState.keypressed(key, scancode, isrepeat)
                 if confirmTick == nil then
                     confirmTick = tick.recur(function()
                         if not isTransitioning then
-                            shouldDraw = not shouldDraw
+                            shouldDrawMenu = not shouldDrawMenu
                         else
-                            shouldDraw = false
+                            shouldDrawMenu = false
                         end
                     end, .075)
                 end
