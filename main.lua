@@ -3,8 +3,10 @@ io.stdout:setvbuf("no")
 -- game info
 _GAME_VERSION = "1.0.0 git"
 
+utils = require "util.utils"
+lomath = require "util.lomath"
+
 paths = require "paths"
-utils = require "utils"
 sprite = require "sprite"
 _c = require "cache"
 
