@@ -60,9 +60,8 @@ function screenFlash(duration, r, g, b)
 end
 
 -- state shit
-titlescreen = require "states.TitleState"
-mainmenu = require "states.MainMenuState"
-optionsmenu = require "states.OptionsState"
+titlescreen = require "game.states.TitleState"
+mainmenu = require "game.states.MainMenuState"
 
 local curState = titlescreen
 

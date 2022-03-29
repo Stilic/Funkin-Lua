@@ -1,6 +1,6 @@
 local MainMenuState = {}
 
-local optionsmenu = require "states.OptionsState"
+local optionsmenu = require "game.states.OptionsState"
 
 local options = {"story_mode", "freeplay", "donate", "options"}
 local curSelected = 1
