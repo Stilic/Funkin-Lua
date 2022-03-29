@@ -1,15 +1,15 @@
 io.stdout:setvbuf("no")
 
--- game info
 _GAME_VERSION = "1.0.0 git"
 
+-- game code go brrr
 utils = require "util.utils"
 lomath = require "util.lomath"
-
 paths = require "util.paths"
 sprite = require "game.sprite"
 _c = require "util.cache"
 
+-- wanna steal more third-party code???
 lovesize = require "lib.lovesize"
 lovebpm = require "lib.lovebpm"
 tick = require "lib.tick"
