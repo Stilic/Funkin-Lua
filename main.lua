@@ -27,7 +27,9 @@ end
 local transTween
 local trans = {y = 0, time = 0.8}
 local transCallback
+
 isTransitioning = false
+local transOut = false
 
 local gradient
 
@@ -44,6 +46,7 @@ local function startTransition(out)
     end
 
     isTransitioning = true
+    transOut = out
 
     transTween = tween.new(trans.time, trans, tweenData)
 end
@@ -89,6 +92,7 @@ function switchState(state, transition)
 
         curState = state
         callState("load")
+
         if transTween ~= nil then transTween:reset() end
         if flash.tween ~= nil then flash.tween:reset() end
 
@@ -164,7 +168,7 @@ function love.draw()
 
     if isTransitioning then
         love.graphics.draw(gradient, 0, trans.y, 0, love.graphics.getWidth(),
-                           love.graphics.getHeight() * 13)
+                           love.graphics.getHeight() * (transOut and 11 or 13))
     end
     if flash.alpha > 0 then
         love.graphics.setColor(flash.color[1], flash.color[2], flash.color[3],
