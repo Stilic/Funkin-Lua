@@ -6,9 +6,9 @@ _GAME_VERSION = "1.0.0 git"
 utils = require "util.utils"
 lomath = require "util.lomath"
 
-paths = require "paths"
-sprite = require "sprite"
-_c = require "cache"
+paths = require "util.paths"
+sprite = require "game.sprite"
+_c = require "util.cache"
 
 lovesize = require "lib.lovesize"
 lovebpm = require "lib.lovebpm"
