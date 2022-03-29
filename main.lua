@@ -27,7 +27,7 @@ end
 local transTween
 local trans = {y = 0, time = 0.8}
 local transCallback
-local isTransitioning = false
+isTransitioning = false
 
 local gradient
 
@@ -139,11 +139,11 @@ function love.resize(width, height) lovesize.resize(width, height) end
 function love.beatHit(n) callState("beatHit", n) end
 
 function love.update(dt)
-    callState("update", dt)
-
-    BGMusic:update()
     tick.update(dt)
+    BGMusic:update()
     TEsound.cleanup()
+
+    callState("update", dt)
 
     if transTween ~= nil and transTween:update(dt) then
         transTween = nil
