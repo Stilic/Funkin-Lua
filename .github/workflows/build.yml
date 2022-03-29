@@ -27,7 +27,6 @@ jobs:
             - uses: nhartland/love-build@v1-beta2
               with:
                   app_name: "Funkin LUA"
-                  source_dir: "src"
                   love_version: "11.4"
             # Upload the built applications
             - uses: actions/upload-artifact@v1

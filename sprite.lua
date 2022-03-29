@@ -101,7 +101,15 @@ function Sprite:draw()
     end
 end
 
-function Sprite:addAnim(name, prefix, indices, framerate, loop)
+function Sprite:addByPrefix(name, prefix, framerate, loop)
+    self:__addAnim(name, prefix, nil, framerate, loop)
+end
+
+function Sprite:addByIndices(name, prefix, indices, framerate, loop)
+    self:__addAnim(name, prefix, indices, framerate, loop)
+end
+
+function Sprite:__addAnim(name, prefix, indices, framerate, loop)
     if not self.destroyed then
         if framerate == nil then
             framerate = 24
@@ -110,71 +118,63 @@ function Sprite:addAnim(name, prefix, indices, framerate, loop)
             loop = true
         end
 
-        for i = 1, #self.xmlData do
-            local data = self.xmlData[i]
+        local anim = {
+            name = name,
+            frames = {},
+            indices = indices,
+            length = 0,
+            framerate = framerate,
+            loop = loop
+        }
 
-            if string.match(data["@name"], prefix) then
-                local anim = {
-                    name = name,
-                    frames = {},
-                    indices = indices,
-                    length = 0,
-                    framerate = framerate,
-                    loop = loop
-                }
+        for f = 1, #self.xmlData do
+            local data = self.xmlData[f]
 
-                for f = 1, #self.xmlData do
-                    local data = self.xmlData[f]
+            if string.sub(data["@name"], 1, string.len(prefix)) == prefix then
+                if (indices == nil or indices == {}) or tableHasValue(indices, f) then
+                    local frame = {
+                        quad = love.graphics.newQuad(data["@x"], data["@y"], data["@width"], data["@height"],
+                            images[self.path .. ".png"]:getDimensions()),
+                        width = data["@width"],
+                        height = data["@height"]
+                    }
 
-                    if string.sub(data["@name"], 1, string.len(prefix)) == prefix then
-                        if (indices == nil or indices == {}) or tableHasValue(indices, f) then
-                            local frame = {
-                                quad = love.graphics.newQuad(data["@x"], data["@y"], data["@width"], data["@height"],
-                                    images[self.path .. ".png"]:getDimensions()),
-                                width = data["@width"],
-                                height = data["@height"]
-                            }
-
-                            local offsetX = data["@frameX"]
-                            if offsetX == nil then
-                                offsetX = 0
-                            end
-                            local offsetY = data["@frameY"]
-                            if offsetY == nil then
-                                offsetY = 0
-                            end
-
-                            local offsetWidth = data["@frameWidth"]
-                            if offsetWidth == nil then
-                                offsetWidth = 0
-                            end
-                            local offsetHeight = data["@frameHeight"]
-                            if offsetHeight == nil then
-                                offsetHeight = 0
-                            end
-
-                            frame.offsets = {
-                                x = offsetX,
-                                y = offsetY,
-                                width = offsetWidth,
-                                height = offsetHeight
-                            }
-
-                            if self.firstFrame == nil then
-                                self.firstFrame = frame
-                            end
-                            table.insert(anim.frames, frame)
-
-                            anim.length = anim.length + 1
-                        end
+                    local offsetX = data["@frameX"]
+                    if offsetX == nil then
+                        offsetX = 0
                     end
+                    local offsetY = data["@frameY"]
+                    if offsetY == nil then
+                        offsetY = 0
+                    end
+
+                    local offsetWidth = data["@frameWidth"]
+                    if offsetWidth == nil then
+                        offsetWidth = 0
+                    end
+                    local offsetHeight = data["@frameHeight"]
+                    if offsetHeight == nil then
+                        offsetHeight = 0
+                    end
+
+                    frame.offsets = {
+                        x = offsetX,
+                        y = offsetY,
+                        width = offsetWidth,
+                        height = offsetHeight
+                    }
+
+                    if self.firstFrame == nil then
+                        self.firstFrame = frame
+                    end
+                    table.insert(anim.frames, frame)
+
+                    anim.length = anim.length + 1
                 end
-
-                self.animations[name] = anim
-
-                break
             end
         end
+
+        self.animations[name] = anim
     end
 
     return self

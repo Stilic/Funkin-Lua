@@ -28,7 +28,9 @@ function utils.gradientMesh(dir, ...)
 
     -- Check for colors
     local colorLen = select("#", ...)
-    if colorLen < 2 then error("color list is less than two", 2) end
+    if colorLen < 2 then
+        error("color list is less than two", 2)
+    end
 
     -- Generate mesh
     local meshData = {}
@@ -37,24 +39,16 @@ function utils.gradientMesh(dir, ...)
             local color = select(i, ...)
             local x = (i - 1) / (colorLen - 1)
 
-            meshData[#meshData + 1] = {
-                x, 1, x, 1, color[1], color[2], color[3], color[4] or 1
-            }
-            meshData[#meshData + 1] = {
-                x, 0, x, 0, color[1], color[2], color[3], color[4] or 1
-            }
+            meshData[#meshData + 1] = {x, 1, x, 1, color[1], color[2], color[3], color[4] or 1}
+            meshData[#meshData + 1] = {x, 0, x, 0, color[1], color[2], color[3], color[4] or 1}
         end
     else
         for i = 1, colorLen do
             local color = select(i, ...)
             local y = (i - 1) / (colorLen - 1)
 
-            meshData[#meshData + 1] = {
-                1, y, 1, y, color[1], color[2], color[3], color[4] or 1
-            }
-            meshData[#meshData + 1] = {
-                0, y, 0, y, color[1], color[2], color[3], color[4] or 1
-            }
+            meshData[#meshData + 1] = {1, y, 1, y, color[1], color[2], color[3], color[4] or 1}
+            meshData[#meshData + 1] = {0, y, 0, y, color[1], color[2], color[3], color[4] or 1}
         end
     end
 
@@ -64,10 +58,14 @@ end
 
 function utils.callGroup(grp, func, ...)
     for i = 1, #grp do
-        if grp[i][func] ~= nil then grp[i][func](grp[i], ...) end
+        if grp[i][func] ~= nil then
+            grp[i][func](grp[i], ...)
+        end
     end
 end
 
-function utils.playSound(sound) TEsound.play(sound, "static") end
+function utils.playSound(sound)
+    TEsound.play(sound, "static")
+end
 
 return utils

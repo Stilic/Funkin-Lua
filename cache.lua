@@ -3,9 +3,14 @@ local cache = {}
 cache.objects = {}
 
 function cache.add(obj, keep)
-    if keep == nil then keep = false end
+    if keep == nil then
+        keep = false
+    end
 
-    table.insert(cache.objects, {[0] = obj, [1] = keep})
+    table.insert(cache.objects, {
+        [0] = obj,
+        [1] = keep
+    })
 end
 
 function cache.remove(obj)
@@ -20,7 +25,9 @@ end
 
 function cache.clear()
     for k, v in pairs(cache.objects) do
-        if not v[1] then utils.remove(v[0]) end
+        if not v[1] then
+            utils.remove(v[0])
+        end
     end
 
     cache.objects = {}
