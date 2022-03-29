@@ -4,9 +4,9 @@ A FNF (Friday Night Funkin') Engine, made all in LUA via LÖVE!
 
 ## Credits
 
-Stilic - Newer repo owner, he's very cool
+Stilic - Newer repo owner, he's very cool.
 
-Arthur Animations/Code - Main idea, logo creator.
+Arthur Animations/Code - Main idea, logo creator, code helper (kind of).
 
 # ⚠️!! FAQ !!⚠️
 ### Q: When is this gonna be done?
