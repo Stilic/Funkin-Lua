@@ -98,8 +98,8 @@ function Sprite:draw()
         local centerY = 0
         -- LOL SO CRINGE WORK I DONE
         if self.centerOffsets then
-            centerX = frame.width / 2
-            centerY = -frame.height / 35 + frame.height / 3
+            centerX = frame.width / 2 + frame.offsets.x / 2
+            centerY = -frame.height / 35 + frame.height / 3 + frame.offsets.y / 2
         end
 
         love.graphics.draw(images[self.path .. ".png"], frame.quad, self.x, self.y, self.angle, self.sizeX, self.sizeY,
