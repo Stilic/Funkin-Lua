@@ -1,5 +1,5 @@
 function love.conf(t)
-    t.window.title = "Funkin' LUA"
+    t.window.title = "Funkin LUA"
     t.window.icon = "gameIcon.png"
 
     t.window.resizable = true

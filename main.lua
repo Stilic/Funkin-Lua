@@ -18,8 +18,7 @@ tween = require "lib.tween"
 require "lib.tesound"
 
 local function drawScreenOverlay()
-    love.graphics.print(
-        "FPS: " .. love.timer.getFPS() .. "\nMemory: " .. math.floor(collectgarbage("count") * 0.1024) .. " MB", 7, 7)
+    love.graphics.print("FPS: "..love.timer.getFPS().."\nMemory: "..math.floor(collectgarbage("count") * 0.1024).." MB", 10, 5)
 end
 
 -- transition shit

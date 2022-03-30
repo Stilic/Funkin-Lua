@@ -1,18 +1,20 @@
 local OptionsSubState = {}
 
--- da options list, no table cus idk if they work with true/false statements
-ghostTapping = true
-middleScroll = false
-scrollType = "up" -- idk if this works lmao
--- end of da options list
+optionsList = {
+    ghostTapping = true,
+    middleScroll = false,
+    scrollType = "up"
+}
 
 function OptionsSubState.load()
-    menuBG = paths.getImage("menuBG")
+    menuBG = paths.getImage("menuDesat")
     _c.add(menuBG)
 end
 
 function OptionsSubState.draw()
+    love.graphics.setColor(234 / 255, 113 / 255, 253 / 255)
     love.graphics.draw(menuBG, 0, 0, 0, 1.1, 1.1)
+    love.graphics.setColor(1, 1, 1)
 end
 
 function OptionsSubState.keypressed(key, scancode, isrepeat)
