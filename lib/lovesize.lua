@@ -57,6 +57,9 @@ local lovesize = {
     end,
     getHeight = function()
         return lh
+    end,
+    getDimensions = function()
+        return lw, lh
     end
 }
 

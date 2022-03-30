@@ -2,14 +2,12 @@ io.stdout:setvbuf("no")
 
 _GAME_VERSION = "1.0.0 git"
 
--- game code go brrr
 utils = require "util.utils"
 lomath = require "util.lomath"
 paths = require "util.paths"
 sprite = require "game.sprite"
 _c = require "util.cache"
 
--- wanna steal more third-party code???
 lovesize = require "lib.lovesize"
 lovebpm = require "lib.lovebpm"
 tick = require "lib.tick"
@@ -18,43 +16,46 @@ tween = require "lib.tween"
 require "lib.tesound"
 
 local function drawScreenOverlay()
-    love.graphics.print(
-        "FPS: " .. love.timer.getFPS() .. "\nMemory: " .. math.floor(collectgarbage("count") * 0.1024) .. " MB", 7, 7)
+    love.graphics.print("FPS: " .. love.timer.getFPS(), 7, 7)
 end
 
--- transition shit
-local transTween
-local trans = {
+trans = {
+    tween = nil,
+    callback = nil,
     y = 0,
-    time = 0.8
+    time = 1,
+    skipNextTransIn = true,
+    skipNextTransOut = true
 }
-local transCallback
+local gradient
 
 isTransitioning = false
 local transOut = false
 
-local gradient
-
 local function startTransition(out)
-    local tweenData
+    local y
     if out then
         gradient = utils.gradientMesh("vertical", {0, 0, 0, 1}, {0, 0, 0, 0})
-        trans.y = -love.graphics.getHeight() * 14
-        tweenData = {
-            y = 0
-        }
+        trans.y = -lovesize.getHeight() * 14
+        y = 0
     else
         gradient = utils.gradientMesh("vertical", {0, 0, 0, 0}, {0, 0, 0, 1})
-        trans.y = -love.graphics.getHeight() * 12
-        tweenData = {
-            y = love.graphics.getHeight() * 2
-        }
+        trans.y = -lovesize.getHeight() * 12
+        y = lovesize.getHeight() * 2
     end
 
     isTransitioning = true
     transOut = out
 
-    transTween = tween.new(trans.time, trans, tweenData)
+    if out then
+        trans.skipNextTransOut = true
+    else
+        trans.skipNextTransIn = true
+    end
+
+    trans.tween = tween.new(trans.time, trans, {
+        y = y
+    })
 end
 
 function screenFlash(duration, r, g, b)
@@ -78,7 +79,6 @@ function screenFlash(duration, r, g, b)
     })
 end
 
--- state shit
 titlescreen = require "game.states.TitleState"
 mainmenu = require "game.states.MainMenuState"
 
@@ -97,12 +97,10 @@ function switchState(state, transition)
         transition = true
     end
 
-    transCallback = function()
+    trans.callback = function()
         love.graphics.clear()
         drawScreenOverlay()
         love.graphics.present()
-
-        startTransition(false)
 
         flash.alpha = 0
         flash.tween = nil
@@ -115,20 +113,17 @@ function switchState(state, transition)
         curState = state
         callState("load")
 
-        if transTween ~= nil then
-            transTween:reset()
-        end
-        if flash.tween ~= nil then
-            flash.tween:reset()
+        if trans.skipNextTransIn and state ~= titlescreen then
+            startTransition(false)
         end
 
         collectgarbage("collect")
     end
 
-    if transition then
+    if transition and trans.skipNextTransOut then
         startTransition(true)
     else
-        transCallback()
+        trans.callback()
     end
 end
 
@@ -167,6 +162,8 @@ function love.load()
     BGMusic = lovebpm.newTrack():load(paths.music("freakyMenu")):setVolume(0.7):setBPM(102):setLooping(true):on("beat",
         love.beatHit)
     playBGMusic()
+
+    collectgarbage("collect")
 end
 
 function love.resize(width, height)
@@ -184,12 +181,12 @@ function love.update(dt)
 
     callState("update", dt)
 
-    if transTween ~= nil and transTween:update(dt) then
-        transTween = nil
+    if trans.tween ~= nil and trans.tween:update(dt) then
+        trans.tween = nil
         isTransitioning = false
-        if transCallback ~= nil then
-            transCallback()
-            transCallback = nil
+        if trans.callback ~= nil then
+            trans.callback()
+            trans.callback = nil
         end
     end
 
@@ -204,12 +201,11 @@ function love.draw()
     callState("draw")
 
     if isTransitioning then
-        love.graphics.draw(gradient, 0, trans.y, 0, love.graphics.getWidth(),
-            love.graphics.getHeight() * (transOut and 11 or 13))
+        love.graphics.draw(gradient, 0, trans.y, 0, lovesize.getWidth(), lovesize.getHeight() * (transOut and 11 or 13))
     end
     if flash.alpha > 0 then
         love.graphics.setColor(flash.color[1], flash.color[2], flash.color[3], flash.alpha)
-        love.graphics.rectangle("fill", 0, 0, love.graphics.getDimensions())
+        love.graphics.rectangle("fill", 0, 0, lovesize.getDimensions())
         love.graphics.setColor(255, 255, 255)
     end
 

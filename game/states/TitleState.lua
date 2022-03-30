@@ -37,7 +37,7 @@ function TitleState.draw()
     titleText:draw()
 end
 
-function TitleState.beatHit(n)
+function TitleState.beatHit()
     logo:playAnim("bump", true)
 
     danceLeft = not danceLeft

@@ -94,16 +94,25 @@ function Sprite:draw()
             frame = self.firstFrame
         end
 
-        local centerX = 0
-        local centerY = 0
-        -- LOL SO CRINGE WORK I DONE
+        local x = self.x
+        local y = self.y
+
+        local offsetX = frame.offsets.x + self.offsetX
+        local offsetY = frame.offsets.y + self.offsetY
+
+        -- why this taken two days to be done
         if self.centerOffsets then
-            centerX = frame.width / 2 + frame.offsets.x / 2
-            centerY = -frame.height / 35 + frame.height / 3 + frame.offsets.y / 2
+            local funni = self.curAnim.frames[1]
+
+            offsetX = offsetX - funni.offsets.x
+            offsetY = offsetY - funni.offsets.y
+
+            x = x - funni.width / 2
+            y = y - funni.height / 2
         end
 
-        love.graphics.draw(images[self.path .. ".png"], frame.quad, self.x, self.y, self.angle, self.sizeX, self.sizeY,
-            frame.offsets.x + centerX + self.offsetX, frame.offsets.y + centerY + self.offsetY)
+        love.graphics.draw(images[self.path .. ".png"], frame.quad, x, y, self.angle, self.sizeX, self.sizeY, offsetX,
+            offsetY)
 
         if not self.paused and not self.curAnim.loop and spriteNum >= self.curAnim.length then
             self.curAnim.finished = true

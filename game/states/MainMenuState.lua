@@ -40,7 +40,7 @@ function MainMenuState.load()
     _c.add(menuBG)
 
     for i = 1, #options do
-        menuItems[i] = sprite(paths.atlas("mainmenu/menu_" .. options[i]), lovesize.getWidth() / 2, 100 + (i - 1) * 155)
+        menuItems[i] = sprite(paths.atlas("mainmenu/menu_" .. options[i]), lovesize.getWidth() / 2, 115 + (i - 1) * 165)
         menuItems[i]:addByPrefix("idle", options[i] .. " basic")
         menuItems[i]:addByPrefix("selected", options[i] .. " white")
         menuItems[i].centerOffsets = true
