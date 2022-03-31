@@ -6,6 +6,7 @@
     "Lua.workspace.checkThirdParty": false,
     "Lua.diagnostics.disable": [
         "lowercase-global",
-        "undefined-global"
+        "undefined-global",
+        "discard-returns"
     ]
 }

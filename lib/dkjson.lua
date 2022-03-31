@@ -733,7 +733,7 @@ function json.use_lpeg ()
     end
   end
 
-  -- cache result of this function:
+  -- _c result of this function:
   json.use_lpeg = function () return jsonlpeg end
   jsonlpeg.use_lpeg = json.use_lpeg
 

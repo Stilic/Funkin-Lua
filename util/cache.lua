@@ -1,37 +1,28 @@
 local cache = {}
 
 cache.objects = {}
+cache.images = {}
 
-function cache.add(obj, keep)
-    if keep == nil then
-        keep = false
+function cache.add(obj) table.insert(cache.objects, obj) end
+
+function cache.getImage(path)
+    if cache.images[path] == nil then
+        cache.images[path] = love.graphics.newImage(path)
     end
-
-    table.insert(cache.objects, {
-        [0] = obj,
-        [1] = keep
-    })
-end
-
-function cache.remove(obj)
-    for k, v in pairs(cache.objects) do
-        if v[0] == obj then
-            utils.remove(v[0])
-            collectgarbage("collect")
-            break
-        end
-    end
+    return cache.images[path]
 end
 
 function cache.clear()
-    for k, v in pairs(cache.objects) do
-        if not v[1] then
-            utils.remove(v[0])
+    for i = 1, #cache.objects do
+        if cache.objects[i].release ~= nil then
+            cache.objects[i]:release()
+        elseif cache.objects[i].destroy ~= ni then
+            cache.objects[i]:destroy()
         end
+        cache.objects[i] = nil
     end
-
-    cache.objects = {}
-    collectgarbage("collect")
+    cache.images = {}
+    collectgarbage()
 end
 
 return cache

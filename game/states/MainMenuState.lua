@@ -2,6 +2,8 @@ local MainMenuState = {}
 
 local optionsmenu = require "game.states.OptionsState"
 
+local menuBG
+
 local options = {"story_mode", "freeplay", "donate", "options"}
 local menuItems
 
@@ -14,12 +16,8 @@ local shouldDrawMenu
 local function changeSelection(change)
     curSelected = curSelected + change
 
-    if curSelected > #options then
-        curSelected = 1
-    end
-    if curSelected < 1 then
-        curSelected = #options
-    end
+    if curSelected > #options then curSelected = 1 end
+    if curSelected < 1 then curSelected = #options end
 
     for i = 1, #menuItems do
         if i == curSelected then
@@ -40,19 +38,19 @@ function MainMenuState.load()
     _c.add(menuBG)
 
     for i = 1, #options do
-        menuItems[i] = sprite(paths.atlas("mainmenu/menu_" .. options[i]), lovesize.getWidth() / 2, 115 + (i - 1) * 165)
-        menuItems[i]:addByPrefix("idle", options[i] .. " basic")
-        menuItems[i]:addByPrefix("selected", options[i] .. " white")
-        menuItems[i].centerOffsets = true
+        local item = sprite(paths.atlas("mainmenu/menu_" .. options[i]),
+                            lovesize.getWidth() / 2, 115 + (i - 1) * 165)
+        item:addByPrefix("idle", options[i] .. " basic")
+        item:addByPrefix("selected", options[i] .. " white")
+        item.centerOffsets = true
+        menuItems[i] = item
     end
     _c.add(menuItems)
 
     changeSelection(0)
 end
 
-function MainMenuState.update(dt)
-    utils.callGroup(menuItems, "update", dt)
-end
+function MainMenuState.update(dt) utils.callGroup(menuItems, "update", dt) end
 
 function MainMenuState.draw()
     love.graphics.draw(menuBG, 0, 0, 0, 1.1, 1.1)
@@ -61,12 +59,8 @@ function MainMenuState.draw()
     love.graphics.print("v" .. _GAME_VERSION, 5, lovesize.getHeight() - 20)
     love.graphics.setColor(255, 255, 255)
 
-    if not confirmed then
-        utils.callGroup(menuItems, "draw")
-    end
-    if confirmed and shouldDrawMenu then
-        menuItems[curSelected]:draw()
-    end
+    if not confirmed then utils.callGroup(menuItems, "draw") end
+    if confirmed and shouldDrawMenu then menuItems[curSelected]:draw() end
 end
 
 function MainMenuState.keypressed(key, scancode, isrepeat)

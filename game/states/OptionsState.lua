@@ -1,14 +1,16 @@
 local OptionsState = {}
 
-local options = {
-    ghostTapping = true,
-    middleScroll = false,
-    downScroll = false
-}
+local options = {ghostTapping = true, middleScroll = false, downScroll = false}
+
+local menuBG
+local funniText
 
 function OptionsState.load()
     menuBG = paths.getImage("menuDesat")
     _c.add(menuBG)
+
+    funniText = alphabet()
+    _c.add(funniText)
 end
 
 function OptionsState.draw()

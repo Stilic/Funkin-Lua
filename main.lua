@@ -6,6 +6,7 @@ utils = require "util.utils"
 lomath = require "util.lomath"
 paths = require "util.paths"
 sprite = require "game.sprite"
+alphabet = require "game.alphabet"
 _c = require "util.cache"
 
 lovesize = require "lib.lovesize"
@@ -105,9 +106,6 @@ function switchState(state, transition)
         flash.alpha = 0
         flash.tween = nil
 
-        for i = 1, #sprite.images do
-            sprite.images[i]:release()
-        end
         _c.clear()
 
         curState = state
@@ -117,7 +115,7 @@ function switchState(state, transition)
             startTransition(false)
         end
 
-        collectgarbage("collect")
+        collectgarbage()
     end
 
     if transition and trans.skipNextTransOut then
@@ -163,7 +161,7 @@ function love.load()
         love.beatHit)
     playBGMusic()
 
-    collectgarbage("collect")
+    collectgarbage()
 end
 
 function love.resize(width, height)
