@@ -1,10 +1,6 @@
 local Alphabet = {}
 Alphabet.__index = Alphabet
 
-function string.indexOf(string, substring)
-    return string.find(string, substring, 1, true)
-end
-
 local characters = {
     alphabet = "abcdefghijklmnopqrstuvwxyz",
     numbers = "1234567890",
@@ -28,7 +24,6 @@ local function new(text, bold, x, y)
         isBold = bold,
         letters = {},
         lastLetter = nil,
-        consecutiveSpaces = 0,
 
         destroyed = false
     }
@@ -47,33 +42,41 @@ end
 
 function Alphabet:changeText(text)
     self:clear()
-
     self.text = text
-    self.consecutiveSpaces = 0
 
-    string.gsub(text, ".", function(c)
+    local oldX = self.x
+    local oldY = self.y
+
+    local consecutiveSpaces = 0
+
+    for c in string.gmatch(text, ".") do
         local xPos = self.x
 
-        local spaceChar = c == " " or (self.isBold and c == "_")
-        if spaceChar then
-            self.consecutiveSpaces = self.consecutiveSpaces + 1
-        end
+        local isNumber = string.find(characters.numbers, c, 1, true)
+        local isSymbol = string.find(characters.symbols, c, 1, true)
+        local isAlphabet = string.find(characters.alphabet, string.lower(c), 1,
+                                       true)
 
-        local isNumber = string.indexOf(characters.numbers, c) ~= -1
-        local isSymbol = string.indexOf(characters.symbols, c) ~= -1
-        local isAlphabet =
-            string.indexOf(characters.alphabet, string.lower(c)) ~= -1
+        if c == "\n" then
+            xPos = oldX - 110
+            oldX = xPos
+            self.y = oldY + 75
+            oldY = self.y
 
-        if (isAlphabet or isSymbol or isNumber) and
-            (not self.isBold or not spaceChar) then
+            consecutiveSpaces = 0
+            self.lastLetter = nil
+        elseif isAlphabet or isSymbol or isNumber then
             if self.lastLetter ~= nil then
-                xPos = xPos + lastLetter.x + lastLetter.width
-            end
-            if self.consecutiveSpaces > 0 then
-                xPos = xPos + 40 * self.consecutiveSpaces
+                xPos = xPos + self.lastLetter.x + self.lastLetter.width
             end
 
-            local letter = sprite(paths.atlas("alphabet"), xPos, self.y)
+            if consecutiveSpaces > 0 then
+                xPos = xPos + 40 * consecutiveSpaces
+                consecutiveSpaces = 0
+            end
+
+            local letter = sprite(paths.atlas("alphabet"), xPos,
+                                  self.isBold and self.y or self.y + 15)
 
             local animName
             if self.isBold then
@@ -93,22 +96,18 @@ function Alphabet:changeText(text)
                     end
 
                     -- set position
-                    if c == "'" then
-                        self.y = self.y - 20
-                    elseif c == "-" then
-                        self.y = self.y + 20
+                    if c == "-" then
+                        letter.y = letter.y + 25
                     elseif c == "(" then
-                        self.x = self.x - 65
-                        self.y = self.y - 5
-                        letter.offsetX = 58
+                        -- self.x = self.x - 65
+                        -- self.y = self.y - 5
+                        -- letter.offsetX = 58
                     elseif c == ")" then
-                        self.x = self.x - 20
-                        self.y = self.y - 5
-                        letter.offsetX = -12
+                        -- self.x = self.x - 20
+                        -- self.y = self.y - 5
+                        letter.x = letter.x - 28
                     elseif c == "." then
-                        self.x = self.x + 45
-                        self.y = self.y + 5
-                        letter.offsetX = -3
+                        letter.y = letter.y + 50
                     end
                 elseif isAlphabet then
                     animName = string.upper(c) .. " bold"
@@ -130,14 +129,17 @@ function Alphabet:changeText(text)
                     elseif c == "," then
                         animName = "comma"
                     else
-                        animName = letter
+                        animName = c
                     end
 
                     -- ima set position again
-                    if c == "'" then
-                        self.y = self.y - 70
-                    elseif c == "-" then
-                        self.y = self.y - 16
+                    if c == "-" then
+                        letter.y = letter.y + 18
+                    elseif c == "," then
+                        letter.y = letter.y + 35
+                    elseif c == "?" or c == "!" then
+                        letter.x = letter.x + 10
+                        letter.y = letter.y - 15
                     end
                 elseif isAlphabet then
                     local case
@@ -150,20 +152,28 @@ function Alphabet:changeText(text)
                     animName = c .. " " .. case
                 end
             end
-            print(animName)
 
             letter:addByPrefix(c, animName)
 
-            if not self.isBold and isAlphabet then
-                self.y = self.y + 110 - letter.height
+            if isAlphabet then
+                letter.y = letter.y + 48
+                if self.isBold then
+                    letter.y = letter.y - letter.height / 1.5
+                else
+                    letter.y = letter.y - letter.height
+                end
             end
 
             table.insert(self.letters, letter)
             self.lastLetter = letter
 
             letter:playAnim(c)
+        elseif c == " " or (self.isBold and c == "_") then
+            consecutiveSpaces = consecutiveSpaces + 1
+        else
+            error("Couldn't find a animation for the character " .. c)
         end
-    end)
+    end
 end
 
 function Alphabet:clear()

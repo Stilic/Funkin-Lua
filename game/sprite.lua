@@ -218,7 +218,9 @@ end
 function Sprite:playAnim(anim, forced)
     if forced == nil then forced = false end
 
-    if not self.destroyed and not self.paused and self.animations[anim] ~= nil then
+    if self.animations[anim] == nil or self.animations[anim].frames[1] == nil then
+        error("The animation " .. anim .. " doesn't exist!")
+    elseif not self.destroyed and not self.paused then
         if not forced and anim == self.curAnim.name then return end
 
         if anim ~= self.curAnim.name then
