@@ -1,7 +1,7 @@
 local Sprite = {}
 Sprite.__index = Sprite
 
-local SLAXML = require "lib.slaxdom"
+local xmlParser = require "lib.xml"
 
 local function new(path, x, y)
     local self = {
@@ -56,10 +56,11 @@ function Sprite:loadImage(path)
     assert(love.filesystem.getInfo(lePath) ~= nil, "The XML file was not found!")
 
     local contents, size = love.filesystem.read(lePath)
-    self.xmlData = SLAXML:dom(string.gsub(contents, "%\u{FEFF}", ""),
-                              {stripWhitespace = true}).root.el
-
-    self:updateDimensions()
+    local data = xmlParser.parse(contents)
+    self.xmlData = {}
+    for _, e in pairs(data) do
+        if e.tag == "SubTexture" then table.insert(self.xmlData, e) end
+    end
 
     return self
 end
