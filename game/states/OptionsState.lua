@@ -9,7 +9,7 @@ function OptionsState.load()
     menuBG = paths.getImage("menuDesat")
     _c.add(menuBG)
 
-    funniText = alphabet("so, you think I WILL LET YOU?!", true)
+    funniText = alphabet("cool swag", true)
     _c.add(funniText)
 end
 
