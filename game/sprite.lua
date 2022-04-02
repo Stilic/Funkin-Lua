@@ -1,46 +1,51 @@
 local Sprite = {}
 Sprite.__index = Sprite
 
+setmetatable(Sprite, {__call = function(self, ...) return self.new(...) end})
+
 local xmlParser = require "lib.xml"
 
-local function new(path, x, y)
-    local self = {
-        x = x,
-        y = y,
-        angle = 0,
+function Sprite.new(path, x, y)
+    local self = setmetatable({}, Sprite)
 
-        width = 0,
-        height = 0,
+    self.x = x
+    self.y = y
 
-        sizeX = 1,
-        sizeY = 1,
+    self.width = 0
+    self.height = 0
 
-        offsetX = 0,
-        offsetY = 0,
-        centerOffsets = false,
+    self.angle = 0
 
-        paused = false,
-        destroyed = false,
+    self.sizeX = 1
+    self.sizeY = 1
 
-        path = nil,
-        xmlData = {},
+    self.offsetX = 0
+    self.offsetY = 0
+    self.centerOffsets = false
 
-        animations = {},
-        firstFrame = nil,
-        curAnim = {
-            name = "",
-            frames = {},
-            indices = {},
-            offsets = {},
-            length = 0,
-            framerate = 24,
-            loop = false,
-            finished = false
-        },
-        curFrame = 1
+    self.paused = false
+    self.destroyed = false
+
+    self.path = path
+    self.xmlData = {}
+
+    self.animations = {}
+    self.curAnim = {
+        name = "",
+        frames = {},
+        indices = {},
+        offsets = {},
+        length = 0,
+        framerate = 24,
+        loop = false,
+        finished = false
     }
-    setmetatable(self, Sprite)
+
+    self.firstFrame = nil
+    self.curFrame = 1
+
     self:loadImage(path)
+
     return self
 end
 
@@ -53,7 +58,8 @@ function Sprite:loadImage(path)
     self.path = path
 
     local lePath = path .. ".xml"
-    assert(love.filesystem.getInfo(lePath) ~= nil, "The XML file was not found!")
+    assert(love.filesystem.getInfo(lePath) ~= nil,
+           "'" .. lePath .. "' was not found!")
 
     local contents, size = love.filesystem.read(lePath)
     local data = xmlParser.parse(contents)
@@ -219,7 +225,7 @@ function Sprite:playAnim(anim, forced)
     if forced == nil then forced = false end
 
     if self.animations[anim] == nil or self.animations[anim].frames[1] == nil then
-        error("The animation " .. anim .. " doesn't exist!")
+        error("The animation '" .. anim .. "' doesn't exist!")
     elseif not self.destroyed and not self.paused then
         if not forced and anim == self.curAnim.name then return end
 
@@ -265,5 +271,4 @@ function Sprite:destroy()
     return self
 end
 
-return
-    setmetatable({new = new}, {__call = function(_, ...) return new(...) end})
+return Sprite

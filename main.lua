@@ -82,6 +82,7 @@ end
 
 titlescreen = require "game.states.TitleState"
 mainmenu = require "game.states.MainMenuState"
+teststate = require "game.states.TestState"
 
 local curState = titlescreen
 
@@ -115,7 +116,6 @@ function switchState(state, transition)
             startTransition(false)
         end
 
-        collectgarbage()
     end
 
     if transition and trans.skipNextTransOut then
@@ -123,6 +123,8 @@ function switchState(state, transition)
     else
         trans.callback()
     end
+
+    collectgarbage()
 end
 
 function resetState()
@@ -160,8 +162,6 @@ function love.load()
     BGMusic = lovebpm.newTrack():load(paths.music("freakyMenu")):setVolume(0.7):setBPM(102):setLooping(true):on("beat",
         love.beatHit)
     playBGMusic()
-
-    collectgarbage()
 end
 
 function love.resize(width, height)

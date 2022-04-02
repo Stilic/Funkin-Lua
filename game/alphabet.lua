@@ -1,34 +1,35 @@
 local Alphabet = {}
 Alphabet.__index = Alphabet
 
+setmetatable(Alphabet, {__call = function(self, ...) return self.new(...) end})
+
 local characters = {
     alphabet = "abcdefghijklmnopqrstuvwxyz",
     numbers = "1234567890",
     symbols = "|~#$%()*+-:;<=>@[]^_.,'!?"
 }
 
-local function new(text, bold, x, y)
+function Alphabet.new(text, bold, x, y)
     if text == nil then text = "cool swag" end
     if bold == nil then bold = false end
     if x == nil then x = 0 end
     if y == nil then y = 0 end
 
-    local self = {
-        x = x,
-        y = y,
+    local self = setmetatable({}, Alphabet)
 
-        sizeX = 1,
-        sizeY = 1,
+    self.x = x
+    self.y = y
 
-        text = text,
-        isBold = bold,
-        letters = {},
-        lastLetter = nil,
+    self.text = text
+    self.isBold = bold
 
-        destroyed = false
-    }
-    setmetatable(self, Alphabet)
+    self.letters = {}
+    self.lastLetter = nil
+
+    self.destroyed = false
+
     self:changeText(self.text)
+
     return self
 end
 
@@ -191,4 +192,4 @@ function Alphabet:destroy()
 end
 
 return
-    setmetatable({new = new}, {__call = function(_, ...) return new(...) end})
+    Alphabet
