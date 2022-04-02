@@ -82,9 +82,10 @@ end
 
 titlescreen = require "game.states.TitleState"
 mainmenu = require "game.states.MainMenuState"
+optionsmenu = require "game.states.OptionsState"
 teststate = require "game.states.TestState"
 
-local curState = titlescreen
+local curState = optionsmenu
 
 local function callState(func, ...)
     if curState[func] ~= nil then

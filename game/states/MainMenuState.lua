@@ -1,7 +1,5 @@
 local MainMenuState = {}
 
-local optionsmenu = require "game.states.OptionsState"
-
 local menuBG
 
 local options = {"story_mode", "freeplay", "donate", "options"}

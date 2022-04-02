@@ -38,15 +38,17 @@ function Alphabet:update(dt)
 end
 
 function Alphabet:draw()
-    if not self.destroyed then utils.callGroup(self.letters, "draw") end
+    if not self.destroyed then
+        utils.callGroup(self.letters, "draw", self.x, self.y)
+    end
 end
 
 function Alphabet:changeText(text)
     self:clear()
     self.text = text
 
-    local oldX = self.x
-    local oldY = self.y
+    local oldX = 0
+    local oldY = 0
 
     local consecutiveSpaces = 0
 
@@ -191,5 +193,4 @@ function Alphabet:destroy()
     return self
 end
 
-return
-    Alphabet
+return Alphabet

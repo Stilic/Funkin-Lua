@@ -89,7 +89,10 @@ function Sprite:update(dt)
     end
 end
 
-function Sprite:draw()
+function Sprite:draw(addX, addY)
+    if addX == nil then addX = 0 end
+    if addY == nil then addY = 0 end
+
     if self.curAnim ~= nil and not self.destroyed then
         local spriteNum = math.floor(self.curFrame)
         if not self.paused then spriteNum = spriteNum + 1 end
@@ -114,9 +117,10 @@ function Sprite:draw()
             y = y - funni.height / 2
         end
 
-        love.graphics.draw(_c.getImage(self.path .. ".png"), frame.quad, x, y,
-                           self.angle, self.sizeX, self.sizeY,
-                           offsetX + self.offsetX, offsetY + self.offsetY)
+        love.graphics.draw(_c.getImage(self.path .. ".png"), frame.quad,
+                           x + addX, y + addY, self.angle, self.sizeX,
+                           self.sizeY, offsetX + self.offsetX,
+                           offsetY + self.offsetY)
 
         if not self.paused and not self.curAnim.loop and spriteNum >=
             self.curAnim.length then self.curAnim.finished = true end
