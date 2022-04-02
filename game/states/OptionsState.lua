@@ -29,6 +29,8 @@ function OptionsState.keypressed(key, scancode, isrepeat)
     if key == "escape" then
         utils.playSound(cancelSnd)
         switchState(mainmenu)
+    elseif key == "return" then
+        funniText:changeText("yeah\nbitch")
     elseif key == "up" then
         funniText.x = funniText.x + 1
     end

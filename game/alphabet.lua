@@ -45,15 +45,16 @@ end
 
 function Alphabet:changeText(text)
     self:clear()
+    self.lastLetter = nil
+
     self.text = text
 
-    local oldX = 0
-    local oldY = 0
+    local coolY = 0
 
     local consecutiveSpaces = 0
 
     for c in string.gmatch(text, ".") do
-        local xPos = self.x
+        local xPos = 0
 
         local isNumber = string.find(characters.numbers, c, 1, true)
         local isSymbol = string.find(characters.symbols, c, 1, true)
@@ -61,10 +62,8 @@ function Alphabet:changeText(text)
                                        true)
 
         if c == "\n" then
-            xPos = oldX - 110
-            oldX = xPos
-            self.y = oldY + 75
-            oldY = self.y
+            xPos = xPos - 110
+            coolY = coolY + 75
 
             consecutiveSpaces = 0
             self.lastLetter = nil
@@ -79,7 +78,7 @@ function Alphabet:changeText(text)
             end
 
             local letter = sprite(paths.atlas("alphabet"), xPos,
-                                  self.isBold and self.y or self.y + 15)
+                                  self.isBold and coolY or coolY + 15)
 
             local animName
             if self.isBold then
