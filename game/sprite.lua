@@ -1,12 +1,20 @@
 local Sprite = {}
 Sprite.__index = Sprite
 
-setmetatable(Sprite, {__call = function(self, ...) return self.new(...) end})
+setmetatable(Sprite, {
+    __call = function(cls, ...)
+        local self = setmetatable({}, cls)
+        self:new(...)
+        return self
+    end
+})
 
 local xmlParser = require "lib.xml"
 
-function Sprite.new(path, x, y)
-    local self = setmetatable({}, Sprite)
+function Sprite:new(path, x, y)
+    if path == nil then path = "" end
+    if x == nil then x = 0 end
+    if y == nil then y = 0 end
 
     self.x = x
     self.y = y
@@ -57,15 +65,19 @@ end
 function Sprite:loadImage(path)
     self.path = path
 
-    local lePath = path .. ".xml"
-    assert(love.filesystem.getInfo(lePath) ~= nil,
-           "'" .. lePath .. "' was not found!")
+    if path ~= "" then
+        local lePath = path .. ".xml"
+        assert(love.filesystem.getInfo(lePath) ~= nil,
+               "'" .. lePath .. "' was not found!")
 
-    local contents, size = love.filesystem.read(lePath)
-    local data = xmlParser.parse(contents)
-    self.xmlData = {}
-    for _, e in pairs(data) do
-        if e.tag == "SubTexture" then table.insert(self.xmlData, e) end
+        local contents, size = love.filesystem.read(lePath)
+        local data = xmlParser.parse(contents)
+        self.xmlData = {}
+        for _, e in pairs(data) do
+            if e.tag == "SubTexture" then
+                table.insert(self.xmlData, e)
+            end
+        end
     end
 
     return self
@@ -229,7 +241,7 @@ function Sprite:playAnim(anim, forced)
     if forced == nil then forced = false end
 
     if self.animations[anim] == nil or self.animations[anim].frames[1] == nil then
-        error("The animation '" .. anim .. "' doesn't exist!")
+        print("The animation '" .. anim .. "' doesn't exist!")
     elseif not self.destroyed and not self.paused then
         if not forced and anim == self.curAnim.name then return end
 

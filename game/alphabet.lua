@@ -1,7 +1,13 @@
 local Alphabet = {}
 Alphabet.__index = Alphabet
 
-setmetatable(Alphabet, {__call = function(self, ...) return self.new(...) end})
+setmetatable(Alphabet, {
+    __call = function(cls, ...)
+        local self = setmetatable({}, cls)
+        self:new(...)
+        return self
+    end
+})
 
 local characters = {
     alphabet = "abcdefghijklmnopqrstuvwxyz",
@@ -9,13 +15,11 @@ local characters = {
     symbols = "|~#$%()*+-:;<=>@[]^_.,'!?"
 }
 
-function Alphabet.new(text, bold, x, y)
+function Alphabet:new(text, bold, x, y)
     if text == nil then text = "cool swag" end
     if bold == nil then bold = false end
     if x == nil then x = 0 end
     if y == nil then y = 0 end
-
-    local self = setmetatable({}, Alphabet)
 
     self.x = x
     self.y = y

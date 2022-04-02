@@ -2,12 +2,16 @@ io.stdout:setvbuf("no")
 
 _GAME_VERSION = "1.0.0 git"
 
+options = {ghostTapping = true, middleScroll = false, downScroll = false}
+
 utils = require "util.utils"
 lomath = require "util.lomath"
 paths = require "util.paths"
-sprite = require "game.sprite"
-alphabet = require "game.alphabet"
 _c = require "util.cache"
+
+sprite = require "game.sprite"
+character = require "game.character"
+alphabet = require "game.alphabet"
 
 lovesize = require "lib.lovesize"
 lovebpm = require "lib.lovebpm"
@@ -85,7 +89,7 @@ mainmenu = require "game.states.MainMenuState"
 optionsmenu = require "game.states.OptionsState"
 teststate = require "game.states.TestState"
 
-local curState = optionsmenu
+local curState = teststate
 
 local function callState(func, ...)
     if curState[func] ~= nil then

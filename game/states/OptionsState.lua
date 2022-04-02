@@ -1,7 +1,5 @@
 local OptionsState = {}
 
--- local options = {ghostTapping = true, middleScroll = false, downScroll = false}
-
 local menuBG
 local funniText
 
