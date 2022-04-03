@@ -5,6 +5,8 @@ function utils.readFile(path)
     return contents
 end
 
+function utils.readJson(path) return json.decode(utils.readFile(path), 1, nil) end
+
 function utils.gradientMesh(dir, ...)
     -- Check for direction
     local isHorizontal = true

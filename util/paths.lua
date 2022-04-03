@@ -20,6 +20,8 @@ function paths.atlas(path) return paths.getPath("images/" .. path) end
 
 function paths.xml(path) return paths.getPath(path .. ".xml") end
 
+function paths.json(path) return paths.getPath("data/" .. path .. ".json") end
+
 function paths.font(path) return paths.getPath("fonts/" .. path) end
 
 return paths

@@ -12,13 +12,14 @@ _c = require "util.cache"
 sprite = require "game.sprite"
 character = require "game.character"
 alphabet = require "game.alphabet"
+song = require "game.song"
 
 lovesize = require "lib.lovesize"
 lovebpm = require "lib.lovebpm"
 baton = require "lib.baton"
 tick = require "lib.tick"
 tween = require "lib.tween"
--- json = require "lib.dkjson"
+json = require "lib.dkjson"
 require "lib.tesound"
 
 local function drawScreenOverlay()

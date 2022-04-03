@@ -79,8 +79,7 @@ function MainMenuState.update(dt)
 
                 tick.delay(function()
                     if curSelected == 1 then
-                        playstate.SONG.song = "bopeebo"
-                        playstate.SONG.bpm = 100
+                        playstate.SONG = song.loadFromJson("bopeebo")
                         switchState(playstate)
                     elseif curSelected == 4 then
                         switchState(optionsmenu)
