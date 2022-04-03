@@ -1,4 +1,4 @@
--- modified shit for transtions
+-- modified for support transitions
 local baton = {
 	_VERSION = 'Baton v1.0.2',
 	_DESCRIPTION = 'Input library for LÖVE.',

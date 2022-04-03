@@ -86,25 +86,25 @@ function screenFlash(duration, r, g, b)
     flash.tween = tween.new(duration, flash, {alpha = 0})
 end
 
-function dump(o)
-    if type(o) == 'table' then
-        local s = '{ '
-        for k, v in pairs(o) do
-            if type(k) ~= 'number' then k = '"' .. k .. '"' end
-            s = s .. '[' .. k .. '] = ' .. dump(v) .. ','
-        end
-        return s .. '} '
-    else
-        return tostring(o)
-    end
-end
+-- function dump(o)
+--     if type(o) == 'table' then
+--         local s = '{ '
+--         for k, v in pairs(o) do
+--             if type(k) ~= 'number' then k = '"' .. k .. '"' end
+--             s = s .. '[' .. k .. '] = ' .. dump(v) .. ','
+--         end
+--         return s .. '} '
+--     else
+--         return tostring(o)
+--     end
+-- end
 
 titlescreen = require "game.states.TitleState"
 mainmenu = require "game.states.MainMenuState"
 optionsmenu = require "game.states.OptionsState"
 playstate = require "game.states.PlayState"
 
-local curState = playstate
+local curState = titlescreen
 
 local function callState(func, ...)
     if curState[func] ~= nil then curState[func](...) end
@@ -131,7 +131,6 @@ function switchState(state, transition)
         if trans.skipNextTransIn and state ~= titlescreen then
             startTransition(false)
         end
-
     end
 
     if transition and trans.skipNextTransOut then
@@ -180,6 +179,8 @@ function love.resize(width, height) lovesize.resize(width, height) end
 function love.beatHit(n) callState("beatHit", n) end
 
 function love.update(dt)
+    dt = math.min(dt, 1 / 30)
+
     input:update()
     tick.update(dt)
 

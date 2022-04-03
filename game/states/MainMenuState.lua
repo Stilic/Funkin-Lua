@@ -77,11 +77,13 @@ function MainMenuState.update(dt)
                     end, .075)
                 end
 
-                if curSelected == 4 then
-                    tick.delay(function()
+                tick.delay(function()
+                    if curSelected == 1 then
+                        switchState(playstate)
+                    elseif curSelected == 4 then
                         switchState(optionsmenu)
-                    end, 1)
-                end
+                    end
+                end, 1)
             end
         end
         if input:pressed "back" then
