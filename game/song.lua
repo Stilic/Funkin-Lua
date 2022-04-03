@@ -7,7 +7,6 @@ function song.loadFromJson(song, folder)
     else
         folder = paths.formatToSongPath(folder)
     end
-
     return utils.readJson(paths.json(folder .. "/" .. song)).song
 end
 

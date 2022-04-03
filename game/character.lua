@@ -17,11 +17,8 @@ function Character:new(char, x, y)
 
     self.offsets = {}
 
-    self.addX = 0
-    self.addY = 0
-
     if char == "bf" then
-        self:loadImage(paths.atlas("characters/BOYFRIEND"))
+        self:load(paths.atlas("characters/BOYFRIEND"))
 
         self:addByPrefix("idle", "BF idle dance", nil, false)
         self:addByPrefix("singUP", "BF NOTE UP0", nil, false)
@@ -38,8 +35,6 @@ function Character:new(char, x, y)
 
     return self
 end
-
-function Character:draw() sprite.draw(self) end
 
 function Character:playAnim(anim, forced)
     if self.offsets[anim] ~= nil then

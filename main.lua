@@ -10,9 +10,11 @@ paths = require "util.paths"
 _c = require "util.cache"
 
 sprite = require "game.sprite"
-character = require "game.character"
 alphabet = require "game.alphabet"
+character = require "game.character"
+
 song = require "game.song"
+strumnote = require "game.strumnote"
 
 lovesize = require "lib.lovesize"
 lovebpm = require "lib.lovebpm"
@@ -32,8 +34,8 @@ input = baton.new({
         right = {"key:right", "key:d", "axis:leftx+", "button:dpright"},
         up = {"key:up", "key:w", "axis:lefty-", "button:dpup"},
         down = {"key:down", "key:s", "axis:lefty+", "button:dpdown"},
-        action = {"key:space", "button:a"},
-        accept = {"key:return", "button:start"},
+        action = {"key:space", "button:x"},
+        accept = {"key:return", "button:start", "button:a"},
         back = {"key:escape", "key:backspace", "button:b"}
     },
     joystick = love.joystick.getJoysticks()[1]

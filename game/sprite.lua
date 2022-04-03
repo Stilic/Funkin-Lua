@@ -52,7 +52,7 @@ function Sprite:new(path, x, y)
     self.firstFrame = nil
     self.curFrame = 1
 
-    self:loadImage(path)
+    self:load(path)
 
     return self
 end
@@ -62,7 +62,7 @@ local function tableHasValue(table, val)
     return false
 end
 
-function Sprite:loadImage(path)
+function Sprite:load(path)
     self.path = path
 
     if path ~= "" then
@@ -204,12 +204,12 @@ function Sprite:__addAnim(name, prefix, indices, framerate, loop)
         self.animations[name] = anim
     end
 
-    self:updateDimensions()
+    self:updateHitbox()
 
     return self
 end
 
-function Sprite:updateDimensions()
+function Sprite:updateHitbox()
     self.width = 0
     self.height = 0
 
