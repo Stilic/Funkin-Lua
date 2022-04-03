@@ -48,28 +48,19 @@ function MainMenuState.load()
     changeSelection(0)
 end
 
-function MainMenuState.update(dt) utils.callGroup(menuItems, "update", dt) end
+function MainMenuState.update(dt)
+    utils.callGroup(menuItems, "update", dt)
 
-function MainMenuState.draw()
-    love.graphics.draw(menuBG, 0, 0, 0, 1.1, 1.1)
-
-    love.graphics.setColor(0, 0, 0)
-    love.graphics.print("v" .. _GAME_VERSION, 5, lovesize.getHeight() - 20)
-    love.graphics.setColor(255, 255, 255)
-
-    if not confirmed then utils.callGroup(menuItems, "draw") end
-    if confirmed and shouldDrawMenu then menuItems[curSelected]:draw() end
-end
-
-function MainMenuState.keypressed(key, scancode, isrepeat)
-    if not isrepeat and not confirmed then
-        if key == "up" then
+    if not confirmed then
+        if input:pressed "up" then
             utils.playSound(scrollSnd)
             changeSelection(-1)
-        elseif key == "down" then
+        end
+        if input:pressed "down" then
             utils.playSound(scrollSnd)
             changeSelection(1)
-        elseif key == "return" then
+        end
+        if input:pressed "accept" then
             utils.playSound(confirmSnd)
             if curSelected == 3 then
                 love.system.openURL("https://ninja-muffin24.itch.io/funkin")
@@ -92,11 +83,23 @@ function MainMenuState.keypressed(key, scancode, isrepeat)
                     end, 1)
                 end
             end
-        elseif key == "escape" then
+        end
+        if input:pressed "back" then
             utils.playSound(cancelSnd)
             switchState(titlescreen)
         end
     end
+end
+
+function MainMenuState.draw()
+    love.graphics.draw(menuBG, 0, 0, 0, 1.1, 1.1)
+
+    love.graphics.setColor(0, 0, 0)
+    love.graphics.print("v" .. _GAME_VERSION, 5, lovesize.getHeight() - 20)
+    love.graphics.setColor(255, 255, 255)
+
+    if not confirmed then utils.callGroup(menuItems, "draw") end
+    if confirmed and shouldDrawMenu then menuItems[curSelected]:draw() end
 end
 
 return MainMenuState

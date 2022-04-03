@@ -115,8 +115,8 @@ function Sprite:draw(addX, addY)
         local x = self.x
         local y = self.y
 
-        local offsetX = frame.offsets.x + self.offsetX
-        local offsetY = frame.offsets.y + self.offsetY
+        local offsetX = frame.offsets.x
+        local offsetY = frame.offsets.y
 
         -- why this taken two days to be done
         if self.centerOffsets then
@@ -130,9 +130,8 @@ function Sprite:draw(addX, addY)
         end
 
         love.graphics.draw(_c.getImage(self.path .. ".png"), frame.quad,
-                           x + addX, y + addY, self.angle, self.sizeX,
-                           self.sizeY, offsetX + self.offsetX,
-                           offsetY + self.offsetY)
+                           x + self.offsetX + addX, y + self.offsetY + addY,
+                           self.angle, self.sizeX, self.sizeY, offsetX, offsetY)
 
         if not self.paused and not self.curAnim.loop and spriteNum >=
             self.curAnim.length then self.curAnim.finished = true end

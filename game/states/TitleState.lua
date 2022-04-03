@@ -37,6 +37,16 @@ function TitleState.update(dt)
     gf:update(dt)
     logo:update(dt)
     titleText:update(dt)
+
+    if not confirmed and input:pressed "accept" then
+        confirmed = true
+
+        utils.playSound(confirmSnd)
+        titleText:playAnim("press")
+        screenFlash()
+
+        tick.delay(function() switchState(mainmenu) end, 1)
+    end
 end
 
 function TitleState.draw()
@@ -53,18 +63,6 @@ function TitleState.beatHit()
         gf:playAnim("danceRight")
     else
         gf:playAnim("danceLeft")
-    end
-end
-
-function TitleState.keypressed(key, scancode, isrepeat)
-    if not isrepeat and not confirmed and key == "return" then
-        confirmed = true
-
-        utils.playSound(confirmSnd)
-        titleText:playAnim("press")
-        screenFlash()
-
-        tick.delay(function() switchState(mainmenu) end, 1)
     end
 end
 

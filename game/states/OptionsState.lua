@@ -21,15 +21,17 @@ function OptionsState.draw()
     funniText:draw(addX, addY)
 end
 
-function OptionsState.update(dt) funniText:update(dt) end
+function OptionsState.update(dt)
+    funniText:update(dt)
 
-function OptionsState.keypressed(key, scancode, isrepeat)
-    if key == "escape" then
+    if input:pressed "back" then
         utils.playSound(cancelSnd)
         switchState(mainmenu)
-    elseif key == "return" then
+    end
+    if input:pressed "accept" then
         funniText:changeText("yeah\nbitch")
-    elseif key == "up" then
+    end
+    if input:down "up" then
         funniText.x = funniText.x + 1
     end
 end

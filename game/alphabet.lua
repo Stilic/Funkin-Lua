@@ -104,13 +104,7 @@ function Alphabet:changeText(text)
                     -- set position
                     if c == "-" then
                         letter.y = letter.y + 25
-                    elseif c == "(" then
-                        -- self.x = self.x - 65
-                        -- self.y = self.y - 5
-                        -- letter.offsetX = 58
                     elseif c == ")" then
-                        -- self.x = self.x - 20
-                        -- self.y = self.y - 5
                         letter.x = letter.x - 28
                     elseif c == "." then
                         letter.y = letter.y + 50
