@@ -56,7 +56,7 @@ end
 function Character:addOffset(anim, x, y)
     if x == nil then x = 0 end
     if y == nil then y = 0 end
-    self.offsets[anim] = {-x, -y}
+    self.offsets[anim] = {x, y}
 end
 
 function Character:dance() self:playAnim("idle", true) end

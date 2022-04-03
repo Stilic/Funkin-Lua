@@ -1,3 +1,4 @@
+-- modified shit for transtions
 local baton = {
 	_VERSION = 'Baton v1.0.2',
 	_DESCRIPTION = 'Input library for LÖVE.',
@@ -299,8 +300,14 @@ end
 -- gets the value of a control or axis pair without deadzone applied
 function Player:getRaw(name)
 	if self._pairs[name] then
+		if isTransitioning then
+			return 0, 0
+		end
 		return self._pairs[name].rawX, self._pairs[name].rawY
 	elseif self._controls[name] then
+		if isTransitioning then
+			return 0
+		end
 		return self._controls[name].rawValue
 	else
 		error('No control with name "' .. name .. '" defined', 3)
@@ -310,8 +317,14 @@ end
 -- gets the value of a control or axis pair with deadzone applied
 function Player:get(name)
 	if self._pairs[name] then
+		if isTransitioning then
+			return 0, 0
+		end
 		return self._pairs[name].x, self._pairs[name].y
 	elseif self._controls[name] then
+		if isTransitioning then
+			return 0
+		end
 		return self._controls[name].value
 	else
 		error('No control with name "' .. name .. '" defined', 3)
@@ -320,6 +333,9 @@ end
 
 -- gets whether a control or axis pair is "held down"
 function Player:down(name)
+	if isTransitioning then
+		return false
+	end
 	if self._pairs[name] then
 		return self._pairs[name].down
 	elseif self._controls[name] then
@@ -331,6 +347,9 @@ end
 
 -- gets whether a control or axis pair was pressed this frame
 function Player:pressed(name)
+	if isTransitioning then
+		return false
+	end
 	if self._pairs[name] then
 		return self._pairs[name].pressed
 	elseif self._controls[name] then
@@ -342,6 +361,9 @@ end
 
 -- gets whether a control or axis pair was released this frame
 function Player:released(name)
+	if isTransitioning then
+		return false
+	end
 	if self._pairs[name] then
 		return self._pairs[name].released
 	elseif self._controls[name] then

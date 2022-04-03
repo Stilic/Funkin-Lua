@@ -130,7 +130,7 @@ function Sprite:draw(addX, addY)
         end
 
         love.graphics.draw(_c.getImage(self.path .. ".png"), frame.quad,
-                           x + self.offsetX + addX, y + self.offsetY + addY,
+                           x - self.offsetX + addX, y - self.offsetY + addY,
                            self.angle, self.sizeX, self.sizeY, offsetX, offsetY)
 
         if not self.paused and not self.curAnim.loop and spriteNum >=
