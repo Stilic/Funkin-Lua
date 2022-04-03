@@ -40,7 +40,8 @@ input = baton.new({
 
 trans = {
     tween = nil,
-    callback = nil,
+    __callback = nil,
+    onComplete = nil,
     y = 0,
     time = 1,
     skipNextTransIn = true,
@@ -115,7 +116,7 @@ function switchState(state, transition)
 
     if transition == nil then transition = true end
 
-    trans.callback = function()
+    trans.__callback = function()
         love.graphics.clear()
         drawScreenOverlay()
         love.graphics.present()
@@ -136,7 +137,7 @@ function switchState(state, transition)
     if transition and trans.skipNextTransOut then
         startTransition(true)
     else
-        trans.callback()
+        trans.__callback()
     end
 
     collectgarbage()
@@ -154,6 +155,15 @@ function pauseBGMusic()
     BGMusic.playing = false
 end
 
+function resetBGMusic() loadBGMusic(defaultMusic) end
+
+function loadBGMusic(music, bpm)
+    if bpm == nil then bpm = 102 end
+    pauseBGMusic()
+    BGMusic:load(music):setBPM(bpm)
+    playBGMusic()
+end
+
 function love.load()
     lovesize.set(1280, 720)
     love.keyboard.setKeyRepeat(true)
@@ -169,8 +179,9 @@ function love.load()
 
     callState("load")
 
-    BGMusic = lovebpm.newTrack():load(paths.music("freakyMenu")):setVolume(0.7)
-                  :setBPM(102):setLooping(true):on("beat", love.beatHit)
+    defaultMusic = paths.music("freakyMenu")
+    BGMusic = lovebpm.newTrack():load(defaultMusic):setVolume(0.7):setBPM(102)
+                  :setLooping(true):on("beat", love.beatHit)
     playBGMusic()
 end
 
@@ -192,9 +203,13 @@ function love.update(dt)
     if trans.tween ~= nil and trans.tween:update(dt) then
         trans.tween = nil
         isTransitioning = false
-        if trans.callback ~= nil then
-            trans.callback()
-            trans.callback = nil
+        if trans.__callback ~= nil then
+            trans.__callback()
+            trans.__callback = nil
+        end
+        if trans.onComplete ~= nil then
+            trans.onComplete()
+            trans.onComplete = nil
         end
     end
 

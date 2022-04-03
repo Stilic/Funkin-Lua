@@ -1,17 +1,15 @@
-local paths = {base = "assets"}
+local paths = {base = "assets", soundExt = ".ogg"}
 
 function paths.getPath(path) return paths.base .. "/" .. path end
 
-function paths.sound(path) return paths.getPath("sounds/" .. path .. ".ogg") end
+function paths.sound(path) return paths.getPath("sounds/" .. path .. paths.soundExt) end
 
-function paths.music(path) return paths.getPath("music/" .. path .. ".ogg") end
+function paths.music(path) return paths.getPath("music/" .. path .. paths.soundExt) end
 
--- function paths.getSound(path)
---     return love.audio.newSource(paths.sound(path), "static")
--- end
+function paths.formatToSongPath(path) return string.lower(path):gsub("% ", "-") end
 
-function paths.getMusic(path)
-    return love.audio.newSource(paths.music(path), "stream")
+function paths.inst(song)
+    return paths.getPath("songs/" .. paths.formatToSongPath(song) .. "/Inst" .. paths.soundExt)
 end
 
 function paths.image(path) return paths.getPath("images/" .. path .. ".png") end
