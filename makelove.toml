@@ -6,9 +6,11 @@ love_files = [
     "./main.lua",
     "./conf.lua",
     "./gameIcon.png",
-    "./discord-rpc.dll",
-    "./send-presence.exe",
     "./assets/*",
-    "./art/*",
     "-*/.*",
+]
+
+shared_libraries = [
+    "./discord-rpc.dll",
+    "./send-presence.exe"
 ]
