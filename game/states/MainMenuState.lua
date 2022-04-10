@@ -1,4 +1,4 @@
-local MainMenuState = {}
+local state = {}
 
 local menuBG
 
@@ -26,7 +26,7 @@ local function changeSelection(change)
     end
 end
 
-function MainMenuState.load()
+function state.load()
     menuItems = {}
 
     confirmed = false
@@ -36,7 +36,7 @@ function MainMenuState.load()
     _c.add(menuBG)
 
     for i = 1, #options do
-        local item = sprite(paths.atlas("mainmenu/menu_" .. options[i]),
+        local item = sprite:new(paths.atlas("mainmenu/menu_" .. options[i]),
                             lovesize.getWidth() / 2, 115 + (i - 1) * 165)
         item:addByPrefix("idle", options[i] .. " basic")
         item:addByPrefix("selected", options[i] .. " white")
@@ -48,7 +48,7 @@ function MainMenuState.load()
     changeSelection(0)
 end
 
-function MainMenuState.update(dt)
+function state.update(dt)
     utils.callGroup(menuItems, "update", dt)
 
     if not confirmed then
@@ -94,7 +94,7 @@ function MainMenuState.update(dt)
     end
 end
 
-function MainMenuState.draw()
+function state.draw()
     love.graphics.draw(menuBG, 0, 0, 0, 1.1, 1.1)
 
     love.graphics.setColor(0, 0, 0)
@@ -105,4 +105,4 @@ function MainMenuState.draw()
     if confirmed and shouldDrawMenu then menuItems[curSelected]:draw() end
 end
 
-return MainMenuState
+return state

@@ -1,4 +1,4 @@
-local TitleState = {}
+local state = {}
 
 local gf
 local logo
@@ -7,11 +7,11 @@ local titleText
 local danceLeft
 local confirmed
 
-function TitleState.load()
+function state.load()
     danceLeft = false
     confirmed = false
 
-    gf = sprite(paths.atlas("gfDanceTitle"), 512, 40)
+    gf = sprite:new(paths.atlas("gfDanceTitle"), 512, 40)
     gf:addByIndices("danceLeft", "gfDance",
                     {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14}, 24,
                     false)
@@ -20,11 +20,11 @@ function TitleState.load()
     }, 24, false)
     _c.add(gf)
 
-    logo = sprite(paths.atlas("logoBumpin"), -125, -85)
+    logo = sprite:new(paths.atlas("logoBumpin"), -125, -85)
     logo:addByPrefix("bump", "logo bumpin instance ", nil, 24, false)
     _c.add(logo)
 
-    titleText = sprite(paths.atlas("titleEnter"), 100, 576)
+    titleText = sprite:new(paths.atlas("titleEnter"), 100, 576)
     titleText:addByPrefix("idle", "Press Enter to Begin")
     titleText:addByPrefix("press", "ENTER PRESSED")
     titleText:playAnim("idle")
@@ -33,7 +33,7 @@ function TitleState.load()
     screenFlash(2)
 end
 
-function TitleState.update(dt)
+function state.update(dt)
     gf:update(dt)
     logo:update(dt)
     titleText:update(dt)
@@ -49,13 +49,13 @@ function TitleState.update(dt)
     end
 end
 
-function TitleState.draw()
+function state.draw()
     gf:draw()
     logo:draw()
     titleText:draw()
 end
 
-function TitleState.beatHit()
+function state.beatHit()
     logo:playAnim("bump", true)
 
     danceLeft = not danceLeft
@@ -66,4 +66,4 @@ function TitleState.beatHit()
     end
 end
 
-return TitleState
+return state

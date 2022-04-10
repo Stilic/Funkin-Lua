@@ -1,39 +1,29 @@
 local Character = {}
-Character.__index = Character
-
-setmetatable(Character, {
-    __index = sprite,
-    __call = function(cls, ...)
-        local self = setmetatable({}, cls)
-        self:new(...)
-        return self
-    end
-})
+setmetatable(Character, {__index = sprite})
 
 function Character:new(char, x, y)
-    if char == nil then char = "bf" end
+    local o = sprite.new(self, nil, x, y)
 
-    sprite.new(self, nil, x, y)
+    o.curCharacter = char or "bf"
+    o.offsets = {}
 
-    self.offsets = {}
+    if o.curCharacter == "bf" then
+        o:load(paths.atlas("characters/BOYFRIEND"))
 
-    if char == "bf" then
-        self:load(paths.atlas("characters/BOYFRIEND"))
+        o:addByPrefix("idle", "BF idle dance", nil, false)
+        o:addByPrefix("singUP", "BF NOTE UP0", nil, false)
+        o:addByPrefix("singLEFT", "BF NOTE LEFT0", nil, false)
+        o:addByPrefix("singRIGHT", "BF NOTE RIGHT0", nil, false)
+        o:addByPrefix("singDOWN", "BF NOTE DOWN0", nil, false)
 
-        self:addByPrefix("idle", "BF idle dance", nil, false)
-        self:addByPrefix("singUP", "BF NOTE UP0", nil, false)
-        self:addByPrefix("singLEFT", "BF NOTE LEFT0", nil, false)
-        self:addByPrefix("singRIGHT", "BF NOTE RIGHT0", nil, false)
-        self:addByPrefix("singDOWN", "BF NOTE DOWN0", nil, false)
-
-        self:addOffset("idle", -5)
-        self:addOffset("singUP", -29, 27)
-        self:addOffset("singRIGHT", -38, -7)
-        self:addOffset("singLEFT", 12, -6)
-        self:addOffset("singDOWN", -10, -50)
+        o:addOffset("idle", -5)
+        o:addOffset("singUP", -29, 27)
+        o:addOffset("singRIGHT", -38, -7)
+        o:addOffset("singLEFT", 12, -6)
+        o:addOffset("singDOWN", -10, -50)
     end
 
-    return self
+    return o
 end
 
 function Character:playAnim(anim, forced)

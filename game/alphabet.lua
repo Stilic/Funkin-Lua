@@ -1,41 +1,10 @@
 local Alphabet = {}
-Alphabet.__index = Alphabet
-
-setmetatable(Alphabet, {
-    __call = function(cls, ...)
-        local self = setmetatable({}, cls)
-        self:new(...)
-        return self
-    end
-})
 
 local characters = {
     alphabet = "abcdefghijklmnopqrstuvwxyz",
     numbers = "1234567890",
     symbols = "|~#$%()*+-:;<=>@[]^_.,'!?"
 }
-
-function Alphabet:new(text, bold, x, y)
-    if text == nil then text = "cool swag" end
-    if bold == nil then bold = false end
-    if x == nil then x = 0 end
-    if y == nil then y = 0 end
-
-    self.x = x
-    self.y = y
-
-    self.text = text
-    self.isBold = bold
-
-    self.letters = {}
-    self.lastLetter = nil
-
-    self.destroyed = false
-
-    self:changeText(self.text)
-
-    return self
-end
 
 function Alphabet:update(dt)
     if not self.destroyed then utils.callGroup(self.letters, "update", dt) end
@@ -81,7 +50,7 @@ function Alphabet:changeText(text)
                 consecutiveSpaces = 0
             end
 
-            local letter = sprite(paths.atlas("alphabet"), xPos,
+            local letter = sprite:new(paths.atlas("alphabet"), xPos,
                                   self.isBold and coolY or coolY + 15)
 
             local animName
@@ -190,4 +159,21 @@ function Alphabet:destroy()
     return self
 end
 
-return Alphabet
+return function(text, bold, x, y)
+    local self = setmetatable({
+        x = x or 0,
+        y = y or 0,
+
+        text = "",
+        isBold = bold or false,
+
+        destroyed = false,
+
+        letters = {},
+        lastLetter = nil
+    }, {__index = Alphabet})
+
+    self:changeText(text)
+
+    return self
+end

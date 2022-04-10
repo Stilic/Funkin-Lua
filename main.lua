@@ -5,7 +5,6 @@ _GAME_VERSION = "1.0.0 git"
 options = {ghostTapping = true, middleScroll = false, downScroll = false}
 
 utils = require "util.utils"
-lomath = require "util.lomath"
 paths = require "util.paths"
 _c = require "util.cache"
 
@@ -90,18 +89,18 @@ function screenFlash(duration, r, g, b)
     flash.tween = tween.new(duration, flash, {alpha = 0})
 end
 
--- function dump(o)
---     if type(o) == 'table' then
---         local s = '{ '
---         for k, v in pairs(o) do
---             if type(k) ~= 'number' then k = '"' .. k .. '"' end
---             s = s .. '[' .. k .. '] = ' .. dump(v) .. ','
---         end
---         return s .. '} '
---     else
---         return tostring(o)
---     end
--- end
+function dump(o)
+    if type(o) == 'table' then
+        local s = '{ '
+        for k, v in pairs(o) do
+            if type(k) ~= 'number' then k = '"' .. k .. '"' end
+            s = s .. '[' .. k .. '] = ' .. dump(v) .. ','
+        end
+        return s .. '} '
+    else
+        return tostring(o)
+    end
+end
 
 titlescreen = require "game.states.TitleState"
 mainmenu = require "game.states.MainMenuState"

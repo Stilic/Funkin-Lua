@@ -1,4 +1,4 @@
-local PlayState = {
+local state = {
     SONG = {
         song = "test",
         notes = {},
@@ -15,21 +15,22 @@ local PlayState = {
 local bf
 local susNote
 
-function PlayState.load()
-    bf = character("bf", 700, 250)
+function state.load()
+    bf = character:new("bf", 700, 250)
     _c.add(bf)
 
-    susNote = strumnote(0, false)
+    susNote = strumnote:new(0, false)
+    _c.add(susNote)
 
-    loadBGMusic(paths.inst(PlayState.SONG.song), playstate.SONG.bpm)
+    loadBGMusic(paths.inst(state.SONG.song), playstate.SONG.bpm)
 end
 
-function PlayState.draw()
+function state.draw()
     bf:draw()
     susNote:draw()
 end
 
-function PlayState.update(dt)
+function state.update(dt)
     bf:update(dt)
     susNote:update(dt)
 
@@ -47,6 +48,6 @@ function PlayState.update(dt)
     if input:released "left" then susNote:playAnim("static", true) end
 end
 
-function PlayState.beatHit(n) if n % 2 == 0 then bf:dance() end end
+function state.beatHit(n) if n % 2 == 0 then bf:dance() end end
 
-return PlayState
+return state

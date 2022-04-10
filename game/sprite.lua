@@ -1,44 +1,40 @@
-local Sprite = {}
-Sprite.__index = Sprite
-
-setmetatable(Sprite, {
-    __call = function(cls, ...)
-        local self = setmetatable({}, cls)
-        self:new(...)
-        return self
-    end
-})
-
 local xmlParser = require "lib.xml"
 
+local function tableHasValue(table, val)
+    for index, value in ipairs(table) do if value == val then return true end end
+    return false
+end
+
+local Sprite = {}
+
 function Sprite:new(path, x, y)
-    if path == nil then path = "" end
-    if x == nil then x = 0 end
-    if y == nil then y = 0 end
+    local o = {}
 
-    self.x = x
-    self.y = y
+    setmetatable(o, {__index = self})
 
-    self.width = 0
-    self.height = 0
+    o.x = x or 0
+    o.y = y or 0
 
-    self.angle = 0
+    o.width = 0
+    o.height = 0
 
-    self.sizeX = 1
-    self.sizeY = 1
+    o.angle = 0
 
-    self.offsetX = 0
-    self.offsetY = 0
-    self.centerOffsets = false
+    o.sizeX = 1
+    o.sizeY = 1
 
-    self.paused = false
-    self.destroyed = false
+    o.offsetX = 0
+    o.offsetY = 0
+    o.centerOffsets = false
 
-    self.path = path
-    self.xmlData = {}
+    o.paused = false
+    o.destroyed = false
 
-    self.animations = {}
-    self.curAnim = {
+    o.path = path or ""
+    o.xmlData = {}
+
+    o.animations = {}
+    o.curAnim = {
         name = "",
         frames = {},
         indices = {},
@@ -49,20 +45,17 @@ function Sprite:new(path, x, y)
         finished = false
     }
 
-    self.firstFrame = nil
-    self.curFrame = 1
+    o.firstFrame = nil
+    o.curFrame = 1
 
-    self:load(path)
+    o:load(path)
 
-    return self
-end
-
-local function tableHasValue(table, val)
-    for index, value in ipairs(table) do if value == val then return true end end
-    return false
+    return o
 end
 
 function Sprite:load(path)
+    if path == nil then path = "" end
+
     self.path = path
 
     if path ~= "" then
@@ -233,9 +226,8 @@ end
 function Sprite:playAnim(anim, forced)
     if forced == nil then forced = false end
 
-    if self.animations[anim] == nil or self.animations[anim].frames[1] == nil then
-        print("The animation '" .. anim .. "' doesn't exist!")
-    elseif not self.destroyed and not self.paused then
+    if self.animations[anim] ~= nil and self.animations[anim].frames[1] ~= nil and
+        not self.destroyed and not self.paused then
         if not forced and anim == self.curAnim.name then return end
 
         if anim ~= self.curAnim.name then
