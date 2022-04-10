@@ -6,35 +6,34 @@ local function tableHasValue(table, val)
 end
 
 local Sprite = {}
+Sprite.__index = Sprite
 
 function Sprite:new(path, x, y)
-    local o = {}
+    self = setmetatable({}, {__index = Sprite})
 
-    setmetatable(o, {__index = self})
+    self.x = x or 0
+    self.y = y or 0
 
-    o.x = x or 0
-    o.y = y or 0
+    self.width = 0
+    self.height = 0
 
-    o.width = 0
-    o.height = 0
+    self.angle = 0
 
-    o.angle = 0
+    self.sizeX = 1
+    self.sizeY = 1
 
-    o.sizeX = 1
-    o.sizeY = 1
+    self.offsetX = 0
+    self.offsetY = 0
+    self.centerOffsets = false
 
-    o.offsetX = 0
-    o.offsetY = 0
-    o.centerOffsets = false
+    self.paused = false
+    self.destroyed = false
 
-    o.paused = false
-    o.destroyed = false
+    self.path = path or ""
+    self.xmlData = {}
 
-    o.path = path or ""
-    o.xmlData = {}
-
-    o.animations = {}
-    o.curAnim = {
+    self.animations = {}
+    self.curAnim = {
         name = "",
         frames = {},
         indices = {},
@@ -45,12 +44,12 @@ function Sprite:new(path, x, y)
         finished = false
     }
 
-    o.firstFrame = nil
-    o.curFrame = 1
+    self.firstFrame = nil
+    self.curFrame = 1
 
-    o:load(path)
+    self:load(path)
 
-    return o
+    return self
 end
 
 function Sprite:load(path)
