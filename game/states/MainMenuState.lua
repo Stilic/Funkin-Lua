@@ -27,13 +27,14 @@ local function changeSelection(change)
 end
 
 function state.load()
-    menuItems = {}
 
     confirmed = false
     shouldDrawMenu = true
 
     menuBG = paths.getImage("menuBG")
     _c.add(menuBG)
+
+    menuItems = {}
 
     for i = 1, #options do
         local item = sprite:new(paths.atlas("mainmenu/menu_" .. options[i]),
@@ -43,6 +44,7 @@ function state.load()
         item.centerOffsets = true
         menuItems[i] = item
     end
+
     _c.add(menuItems)
 
     changeSelection(0)

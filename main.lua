@@ -13,6 +13,7 @@ alphabet = require "game.alphabet"
 character = require "game.character"
 
 song = require "game.song"
+note = require "game.note"
 strumnote = require "game.strumnote"
 
 lovesize = require "lib.lovesize"
@@ -89,18 +90,18 @@ function screenFlash(duration, r, g, b)
     flash.tween = tween.new(duration, flash, {alpha = 0})
 end
 
-function dump(o)
-    if type(o) == 'table' then
-        local s = '{ '
-        for k, v in pairs(o) do
-            if type(k) ~= 'number' then k = '"' .. k .. '"' end
-            s = s .. '[' .. k .. '] = ' .. dump(v) .. ','
-        end
-        return s .. '} '
-    else
-        return tostring(o)
-    end
-end
+-- function dump(o)
+--     if type(o) == 'table' then
+--         local s = '{ '
+--         for k, v in pairs(o) do
+--             if type(k) ~= 'number' then k = '"' .. k .. '"' end
+--             s = s .. '[' .. k .. '] = ' .. dump(v) .. ','
+--         end
+--         return s .. '} '
+--     else
+--         return tostring(o)
+--     end
+-- end
 
 titlescreen = require "game.states.TitleState"
 mainmenu = require "game.states.MainMenuState"
@@ -157,7 +158,10 @@ function pauseBGMusic()
     BGMusic.playing = false
 end
 
-function resetBGMusic() loadBGMusic(defaultMusic) end
+function resetBGMusic()
+    loadBGMusic(defaultMusic)
+    BGMusic:setLooping(true)
+end
 
 function loadBGMusic(music, bpm)
     if bpm == nil then bpm = 102 end
@@ -183,13 +187,15 @@ function love.load()
 
     defaultMusic = paths.music("freakyMenu")
     BGMusic = lovebpm.newTrack():load(defaultMusic):setVolume(0.7):setBPM(102)
-                  :setLooping(true):on("beat", love.beatHit)
+                  :setLooping(true):on("beat", love.beatHit):on("end", love.songEnd)
     playBGMusic()
 end
 
 function love.resize(width, height) lovesize.resize(width, height) end
 
 function love.beatHit(n) callState("beatHit", n) end
+
+function love.songEnd() callState("songEnd") end
 
 function love.update(dt)
     dt = math.min(dt, 1 / 30)
