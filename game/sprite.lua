@@ -104,19 +104,28 @@ function Sprite:draw(addX, addY)
         local frame = self.curAnim.frames[spriteNum]
         if frame == nil then frame = self.firstFrame end
 
+        local x = self.x
+        local y = self.y
+
         local offsetX = frame.offsets.x
         local offsetY = frame.offsets.y
 
         -- why this taken two days to be done
         if self.centerOffsets then
             local funni = self.curAnim.frames[1]
-            offsetX = offsetX - funni.offsets.x + funni.width / 2
-            offsetY = offsetY - funni.offsets.y + funni.height / 2
+            local rock = 11
+
+            -- lol more funni than funni variable
+            x = x - rock / 2
+            y = y - rock / 2
+
+            offsetX = offsetX * (rock / 10) - funni.offsets.x / 2 + funni.width / 2
+            offsetY = offsetY * (rock / 10) - funni.offsets.y / 2 + funni.height / 2
         end
 
         love.graphics.draw(_c.getImage(self.path .. ".png"), frame.quad,
-                           self.x - self.offsetX + addX,
-                           self.y - self.offsetY + addY, self.angle, self.sizeX,
+                           x - self.offsetX + addX,
+                           y - self.offsetY + addY, self.angle, self.sizeX,
                            self.sizeY, offsetX, offsetY)
 
         if not self.paused and not self.curAnim.loop and spriteNum >=

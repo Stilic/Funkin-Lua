@@ -120,6 +120,8 @@ function switchState(state, transition)
     if transition == nil then transition = true end
 
     trans.__callback = function()
+        callState('exit')
+
         love.graphics.clear()
         drawScreenOverlay()
         love.graphics.present()
@@ -187,7 +189,8 @@ function love.load()
 
     defaultMusic = paths.music("freakyMenu")
     BGMusic = lovebpm.newTrack():load(defaultMusic):setVolume(0.7):setBPM(102)
-                  :setLooping(true):on("beat", love.beatHit):on("end", love.songEnd)
+                  :setLooping(true):on("beat", love.beatHit)
+                  :on("end", love.songEnd)
     playBGMusic()
 end
 
@@ -195,7 +198,10 @@ function love.resize(width, height) lovesize.resize(width, height) end
 
 function love.beatHit(n) callState("beatHit", n) end
 
-function love.songEnd() callState("songEnd") end
+function love.songEnd()
+    print("song end")
+    callState("songEnd")
+end
 
 function love.update(dt)
     dt = math.min(dt, 1 / 30)

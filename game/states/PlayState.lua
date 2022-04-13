@@ -35,6 +35,14 @@ local function generateStaticArrows(player)
     end
 end
 
+local function generateSong()
+    loadBGMusic(paths.inst(state.SONG.song), playstate.SONG.bpm)
+    BGMusic:setLooping(false)
+
+    vocals = love.audio.newSource(paths.voices(state.SONG.song), "stream")
+    vocals:play()
+end
+
 local function endSong()
     resetBGMusic()
     switchState(mainmenu)
@@ -53,12 +61,8 @@ function state.load()
     _c.add(playerStrums)
     _c.add(opponentStrums)
 
-    loadBGMusic(paths.inst(state.SONG.song), playstate.SONG.bpm)
-    BGMusic:setLooping(false)
-
-    vocals = love.audio.newSource(paths.voices(state.SONG.song), "stream")
+    generateSong()
     _c.add(vocals)
-    vocals:play()
 end
 
 function state.draw()
@@ -81,7 +85,7 @@ function state.update(dt)
 
     for i = 1, #playerStrums do
         if input:pressed(note.directions[i]) then
-            playerStrums[i]:playAnim("pressed", true)
+            playerStrums[i]:playAnim("confirm", true)
         end
         if input:released(note.directions[i]) then
             playerStrums[i]:playAnim("static", true)
