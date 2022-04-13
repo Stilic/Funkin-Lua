@@ -28,9 +28,9 @@ local function generateStaticArrows(player)
                                         (lovesize.getWidth() / 2) * player, 50)
 
         if player == 1 then
-            opponentStrums[i] = strum
-        else
             playerStrums[i] = strum
+        else
+            opponentStrums[i] = strum
         end
     end
 end
@@ -79,13 +79,17 @@ function state.update(dt)
     if input:pressed "up" then bf:playAnim("singUP", true) end
     if input:pressed "down" then bf:playAnim("singDOWN", true) end
 
-    -- if input:pressed "left" then susNote:playAnim("confirm", true) end
-    -- if input:released "left" then susNote:playAnim("static", true) end
+    for i = 1, #playerStrums do
+        if input:pressed(note.directions[i]) then
+            playerStrums[i]:playAnim("pressed", true)
+        end
+        if input:released(note.directions[i]) then
+            playerStrums[i]:playAnim("static", true)
+        end
+    end
 end
 
-function state.songEnd()
-    endSong()
-end
+function state.songEnd() endSong() end
 
 function state.beatHit(n) if n % 2 == 0 then bf:dance() end end
 
