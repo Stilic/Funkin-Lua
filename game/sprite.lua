@@ -27,6 +27,12 @@ function Sprite:new(path, x, y)
     self.centerOffsets = false
 
     self.paused = false
+
+    self.visible = true
+    self.active = true
+
+    self.alpha = 1
+
     self.destroyed = false
 
     self.path = path or ""
@@ -76,6 +82,8 @@ function Sprite:load(path)
 end
 
 function Sprite:update(dt)
+    if not self.active then return end
+
     if self.curAnim ~= nil and not self.destroyed then
         local frame = self.curFrame + dt * self.curAnim.framerate
         if not self.paused or
@@ -94,6 +102,8 @@ function Sprite:update(dt)
 end
 
 function Sprite:draw(addX, addY)
+    if not self.visible then return end
+
     if addX == nil then addX = 0 end
     if addY == nil then addY = 0 end
 
@@ -119,14 +129,17 @@ function Sprite:draw(addX, addY)
             x = x - rock / 2
             y = y - rock / 2
 
-            offsetX = offsetX * (rock / 10) - funni.offsets.x / 2 + funni.width / 2
-            offsetY = offsetY * (rock / 10) - funni.offsets.y / 2 + funni.height / 2
+            offsetX = offsetX * rock / 10 - funni.offsets.x / 2 + funni.width /
+                          2
+            offsetY = offsetY * rock / 10 - funni.offsets.y / 2 + funni.height /
+                          2
         end
 
+        love.graphics.setColor(255, 255, 255, self.alpha)
         love.graphics.draw(_c.getImage(self.path .. ".png"), frame.quad,
-                           x - self.offsetX + addX,
-                           y - self.offsetY + addY, self.angle, self.sizeX,
-                           self.sizeY, offsetX, offsetY)
+                           x - self.offsetX + addX, y - self.offsetY + addY,
+                           self.angle, self.sizeX, self.sizeY, offsetX, offsetY)
+        love.graphics.setColor(255, 255, 255)
 
         if not self.paused and not self.curAnim.loop and spriteNum >=
             self.curAnim.length then self.curAnim.finished = true end

@@ -27,7 +27,6 @@ local function changeSelection(change)
 end
 
 function state.load()
-
     confirmed = false
     shouldDrawMenu = true
 

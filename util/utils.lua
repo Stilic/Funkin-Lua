@@ -1,4 +1,7 @@
-local utils = {}
+local utils = {
+    noteDirections = {"left", "down", "up", "right"},
+    noteColors = {"purple", "blue", "green", "red"}
+}
 
 function utils.readFile(path)
     local contents, size = love.filesystem.read(path)
@@ -59,5 +62,25 @@ function utils.callGroup(grp, func, ...)
 end
 
 function utils.playSound(sound) TEsound.play(sound, "static") end
+
+function utils.round(num, numDecimalPlaces)
+    local mult = 10 ^ (numDecimalPlaces or 0)
+    return math.floor(num * mult + 0.5) / mult
+end
+
+function utils.sliceArray(tbl, first, last, step)
+    local sliced = {}
+
+    for i = first or 1, last or #tbl, step or 1 do
+        sliced[#sliced + 1] = tbl[i]
+    end
+
+    return sliced
+end
+
+function utils.indexOf(array, value)
+    for i, v in ipairs(array) do if v == value then return i end end
+    return nil
+end
 
 return utils

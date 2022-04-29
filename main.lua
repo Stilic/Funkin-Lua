@@ -25,7 +25,10 @@ json = require "lib.dkjson"
 require "lib.tesound"
 
 local function drawScreenOverlay()
-    love.graphics.print("FPS: " .. love.timer.getFPS(), 7, 7)
+    love.graphics.print("FPS: " .. love.timer.getFPS() .. "\nMemory: " ..
+                            math.floor(
+                                love.graphics.getStats().texturememory / 1048576) ..
+                            " MB", 7, 7)
 end
 
 input = baton.new({
@@ -190,18 +193,15 @@ function love.load()
     defaultMusic = paths.music("freakyMenu")
     BGMusic = lovebpm.newTrack():load(defaultMusic):setVolume(0.7):setBPM(102)
                   :setLooping(true):on("beat", love.beatHit)
-                  :on("end", love.songEnd)
+                  :on("end", love.songEnd):on("loop", love.songEnd)
     playBGMusic()
 end
 
 function love.resize(width, height) lovesize.resize(width, height) end
 
-function love.beatHit(n) callState("beatHit", n) end
+function love.songEnd() callState("songEnd") end
 
-function love.songEnd()
-    print("song end")
-    callState("songEnd")
-end
+function love.beatHit(n) callState("beatHit", n) end
 
 function love.update(dt)
     dt = math.min(dt, 1 / 30)
