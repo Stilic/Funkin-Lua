@@ -146,7 +146,6 @@ function Sprite:draw(addX, addY)
                            y - self.offsetY + addY, self.angle, self.sizeX,
                            self.sizeY, offsetX, offsetY)
 
-
         if not self.paused and not self.curAnim.loop and spriteNum >=
             #self.curAnim.frames then self.curAnim.finished = true end
     end
@@ -194,9 +193,7 @@ function Sprite:__addAnim(name, prefix, indices, framerate, loop)
 
                     frame.offsets = {
                         x = tonumber(data["frameX"]) or 0,
-                        y = tonumber(data["frameY"]) or 0,
-                        width = tonumber(data["frameWidth"]) or 0,
-                        height = tonumber(data["frameHeight"]) or 0
+                        y = tonumber(data["frameY"]) or 0
                     }
 
                     table.insert(anim.frames, frame)

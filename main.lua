@@ -4,7 +4,7 @@ _GAME_VERSION = "1.0.0 git"
 options = {ghostTapping = true, middleScroll = false, downScroll = false}
 
 local function drawScreenOverlay()
-    love.graphics.print("FPS: " .. love.timer.getFPS() .. "\nMemory: " ..
+    love.graphics.print("FPS: " .. love.timer.getFPS() .. "\nTex MEM: " ..
                             math.floor(
                                 love.graphics.getStats().texturememory / 1048576) ..
                             " MB", 7, 7)
@@ -59,14 +59,14 @@ local function startTransition(out)
     isTransitioning = true
 
     local y = lovesize.getHeight()
+    trans.y = -lovesize.getHeight() * 10
     if out then
         trans.skipNextTransOut = true
         gradient = utils.gradientMesh("vertical", {0, 0, 0, 1}, {0, 0, 0, 0})
-        trans.y = -lovesize.getHeight() * 8
     else
         trans.skipNextTransIn = true
         gradient = utils.gradientMesh("vertical", {0, 0, 0, 0}, {0, 0, 0, 1})
-        trans.y = -lovesize.getHeight() * 5
+        trans.y = trans.y / 2
         y = y / 2
     end
 

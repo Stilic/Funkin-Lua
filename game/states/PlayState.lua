@@ -230,7 +230,7 @@ function state.update(dt)
 
     for i = 1, #playerStrums do
         if input:pressed(utils.noteDirections[i]) then
-            playerStrums[i]:playAnim("confirm", true)
+            playerStrums[i]:playAnim("pressed", true)
         end
         if input:released(utils.noteDirections[i]) then
             playerStrums[i]:playAnim("static", true)

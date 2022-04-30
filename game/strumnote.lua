@@ -24,7 +24,8 @@ end
 
 function StrumNote:postAddedToGroup()
     self:playAnim("static")
-    self.x = self.x + note.swagWidth * self.noteData + 50 + lovesize:getWidth() / 2 *
+    self.x =
+        self.x + note.swagWidth * self.noteData + 50 + lovesize:getWidth() / 2 *
             self.player
 end
 
