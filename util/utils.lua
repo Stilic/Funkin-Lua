@@ -83,4 +83,9 @@ function utils.indexOf(array, value)
     return nil
 end
 
+function utils.offscreen(object)
+    return object.x < -object.width or object.y < -object.height or object.x >
+               lovesize:getWidth() or object.y > lovesize:getHeight()
+end
+
 return utils

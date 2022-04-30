@@ -19,6 +19,9 @@ local vocals
 
 -- local bf
 
+local songPosition = 0
+local safeZoneOffset = 10 / 60 * 1000
+
 local notes
 local fakeNote
 
@@ -40,7 +43,7 @@ local function generateStaticArrows(player)
     end
 end
 
-local function sortByShit(a, b) return a.strumTime < b.strumTime end
+local function sortByShit(a, b) return a.strumTime > b.strumTime end
 
 local function generateSong()
     if state.SONG.needsVoices then
@@ -53,14 +56,35 @@ local function generateSong()
     notes = {}
 
     local songData = state.SONG.notes
+    local roundedSpeed = utils.round(state.SONG.speed, 2)
+    local leSpeed = 0.45 * roundedSpeed
 
     local offset = lovesize:getWidth() / 2
     local size = 0.7
+    local update = function(self, dt)
+        if self.mustPress then
+            self.canBeHit = self.strumTime > songPosition - safeZoneOffset and
+                                self.strumTime < songPosition + safeZoneOffset *
+                                self.earlyHitMult
+
+            if self.strumTime < songPosition - safeZoneOffset and
+                not self.wasGoodHit then self.tooLate = true end
+        else
+            self.canBeHit = false
+
+            if self.strumTime < songPosition + safeZoneOffset *
+                self.earlyHitMult and
+                ((self.isSustainNote and self.prevNote.wasGoodHit) or
+                    self.strumTime <= songPosition) then
+                self.wasGoodHit = true
+            end
+        end
+    end
 
     for i, section in ipairs(songData) do
         for b, songNotes in ipairs(section.sectionNotes) do
             local daStrumTime = songNotes[1]
-            local daNoteData = math.floor(songNotes[2] % 4) + 1
+            local daNoteData = math.floor(songNotes[2] % 4)
             local x = state.strumX + 50 + note.swagWidth * (daNoteData % 4)
 
             local gottaHitNote = section.mustHitSection
@@ -72,15 +96,23 @@ local function generateSong()
 
             local swagNote = {
                 x = x,
-                y = 0,
+                y = 50 + daStrumTime * leSpeed,
                 sizeX = size,
                 sizeY = size,
+
                 strumTime = daStrumTime,
                 noteData = daNoteData,
                 mustPress = gottaHitNote,
+
                 prevNote = oldNote,
                 isSustainNote = false,
-                sustainLength = songNotes[3]
+                sustainLength = songNotes[3],
+
+                earlyHitMult = 1,
+                wasGoodHit = false,
+                tooLate = false,
+
+                update = update
             }
             -- print("made note: time is " .. daStrumTime .. ", data is " ..
             --           daNoteData, ", should press: " .. ("yes" or "no" and gottaHitNote))
@@ -92,19 +124,28 @@ local function generateSong()
             if floorSus > 0 then
                 for susNote = 0, floorSus do
                     oldNote = notes[#notes]
+                    local susTime = daStrumTime + BGMusic.period * susNote +
+                                        BGMusic.period / roundedSpeed
 
                     local sustainNote = {
                         x = x,
-                        y = 0,
+                        y = 50 + susTime * leSpeed,
                         sizeX = size,
                         sizeY = size,
-                        strumTime = daStrumTime + BGMusic.period * susNote +
-                            BGMusic.period / utils.round(state.SONG.speed, 2),
+
+                        strumTime = susTime,
                         noteData = daNoteData,
                         mustPress = gottaHitNote,
+
                         prevNote = oldNote,
                         isSustainNote = true,
-                        isHoldEnd = susNote == floorSus
+                        isHoldEnd = susNote == floorSus,
+
+                        earlyHitMult = 0.5,
+                        wasGoodHit = false,
+                        tooLate = false,
+
+                        update = update
                     }
                     -- print("made sus note " .. susNote .. ": time is " .. sustainNote.strumTime ..
                     --           ", data is " .. daNoteData,
@@ -126,8 +167,8 @@ local function pauseVocals() if vocals ~= nil then vocals:pause() end end
 
 local function endSong()
     pauseVocals()
-    switchState(mainmenu)
     resetBGMusic()
+    switchState(mainmenu)
 end
 
 local function startSong()
@@ -139,7 +180,10 @@ end
 
 function state.load()
     -- bf = character:new("bf", 700, 250)
-    -- _c.add(bf)
+
+    BGMusic:pause()
+    BGMusic:setTime(0)
+    songPosition = 0
 
     generatedMusic = false
 
@@ -149,32 +193,13 @@ function state.load()
     generateStaticArrows(0)
     generateStaticArrows(1)
 
-    _c.add(playerStrums)
-    _c.add(opponentStrums)
-
     fakeNote = note:new()
 
     generateSong()
-    startSong()
+    tick.delay(startSong, 2)
 end
 
 function state.songEnd() endSong() end
-
-function state.draw()
-    -- bf:draw()
-
-    utils.callGroup(playerStrums, "draw")
-    utils.callGroup(opponentStrums, "draw")
-
-    love.graphics.push()
-    love.graphics.translate(0, -BGMusic:getTime() * 1000 *
-                                (0.45 * utils.round(state.SONG.speed, 2)))
-    for n, daNote in ipairs(notes) do
-        fakeNote:loadNote(daNote)
-        fakeNote:draw()
-    end
-    love.graphics.pop()
-end
 
 function state.update(dt)
     -- bf:update(dt)
@@ -182,31 +207,9 @@ function state.update(dt)
     utils.callGroup(playerStrums, "update", dt)
     utils.callGroup(opponentStrums, "update", dt)
 
-    local musicTime = BGMusic:getTime()
-
-    if generatedMusic then
-        local height = lovesize:getHeight()
-
-        for n, daNote in ipairs(notes) do
-            if -daNote.y > height then
-                daNote.active = false
-                daNote.visible = false
-            else
-                daNote.active = true
-                daNote.visible = true
-            end
-
-            daNote.y = 50 - (musicTime - daNote.strumTime) *
-                           (0.45 * utils.round(state.SONG.speed, 2))
-
-            -- if daNote.y < -height then
-            --     table.remove(notes, n)
-            --     daNote:destroy()
-            -- end
-        end
+    if not isTransitioning and not trans.out then
+        songPosition = BGMusic:getTime() * 1000
     end
-
-    utils.callGroup(notes, "update", dt)
 
     if input:pressed "back" then endSong() end
 
@@ -235,6 +238,22 @@ function state.update(dt)
     end
 end
 
--- function state.beatHit(n) if n % 2 == 0 then bf:dance() end end
+local function drawNote(daNote)
+    fakeNote:loadNote(daNote)
+    fakeNote.y = fakeNote.y + -songPosition *
+                     (0.45 * utils.round(state.SONG.speed, 2))
+    if not utils.offscreen(fakeNote) then fakeNote:draw() end
+end
+
+function state.draw()
+    -- bf:draw()
+
+    utils.callGroup(playerStrums, "draw")
+    utils.callGroup(opponentStrums, "draw")
+
+    if generatedMusic then
+        for n, daNote in ipairs(notes) do drawNote(daNote) end
+    end
+end
 
 return state

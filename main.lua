@@ -1,8 +1,14 @@
 io.stdout:setvbuf("no")
 
 _GAME_VERSION = "1.0.0 git"
-
 options = {ghostTapping = true, middleScroll = false, downScroll = false}
+
+local function drawScreenOverlay()
+    love.graphics.print("FPS: " .. love.timer.getFPS() .. "\nMemory: " ..
+                            math.floor(
+                                love.graphics.getStats().texturememory / 1048576) ..
+                            " MB", 7, 7)
+end
 
 utils = require "util.utils"
 paths = require "util.paths"
@@ -24,13 +30,6 @@ tween = require "lib.tween"
 json = require "lib.dkjson"
 require "lib.tesound"
 
-local function drawScreenOverlay()
-    love.graphics.print("FPS: " .. love.timer.getFPS() .. "\nMemory: " ..
-                            math.floor(
-                                love.graphics.getStats().texturememory / 1048576) ..
-                            " MB", 7, 7)
-end
-
 input = baton.new({
     controls = {
         left = {"key:left", "key:a", "axis:leftx-", "button:dpleft"},
@@ -46,38 +45,32 @@ input = baton.new({
 
 trans = {
     tween = nil,
-    __callback = nil,
     onComplete = nil,
     y = 0,
     time = 1,
+    out = false,
     skipNextTransIn = true,
     skipNextTransOut = true
 }
+isTransitioning = false
 local gradient
 
-isTransitioning = false
-local transOut = false
-
 local function startTransition(out)
-    local y
-    if out then
-        gradient = utils.gradientMesh("vertical", {0, 0, 0, 1}, {0, 0, 0, 0})
-        trans.y = -lovesize.getHeight() * 14
-        y = 0
-    else
-        gradient = utils.gradientMesh("vertical", {0, 0, 0, 0}, {0, 0, 0, 1})
-        trans.y = -lovesize.getHeight() * 12
-        y = lovesize.getHeight() * 2
-    end
-
     isTransitioning = true
-    transOut = out
 
+    local y = lovesize.getHeight()
     if out then
         trans.skipNextTransOut = true
+        gradient = utils.gradientMesh("vertical", {0, 0, 0, 1}, {0, 0, 0, 0})
+        trans.y = -lovesize.getHeight() * 8
     else
         trans.skipNextTransIn = true
+        gradient = utils.gradientMesh("vertical", {0, 0, 0, 0}, {0, 0, 0, 1})
+        trans.y = -lovesize.getHeight() * 5
+        y = y / 2
     end
+
+    trans.out = out
 
     trans.tween = tween.new(trans.time, trans, {y = y})
 end
@@ -106,6 +99,7 @@ end
 --     end
 -- end
 
+-- states loaded here
 titlescreen = require "game.states.TitleState"
 mainmenu = require "game.states.MainMenuState"
 optionsmenu = require "game.states.OptionsState"
@@ -122,10 +116,12 @@ function switchState(state, transition)
 
     if transition == nil then transition = true end
 
-    trans.__callback = function()
+    trans.onComplete = function()
         callState('exit')
 
-        love.graphics.clear()
+        -- love.graphics.setColor(0, 0, 0)
+        -- love.graphics.rectangle("fill", 0, 0, lovesize:getDimensions())
+        -- love.graphics.setColor(255, 255, 255)
         drawScreenOverlay()
         love.graphics.present()
 
@@ -145,13 +141,16 @@ function switchState(state, transition)
     if transition and trans.skipNextTransOut then
         startTransition(true)
     else
-        trans.__callback()
+        trans.onComplete()
     end
 
     collectgarbage()
 end
 
 function resetState() switchState(curState) end
+
+-- music shit
+local defaultMusic = paths.music("freakyMenu")
 
 function playBGMusic()
     BGMusic:play()
@@ -190,18 +189,11 @@ function love.load()
 
     callState("load")
 
-    defaultMusic = paths.music("freakyMenu")
     BGMusic = lovebpm.newTrack():load(defaultMusic):setVolume(0.7):setBPM(102)
                   :setLooping(true):on("beat", love.beatHit)
                   :on("end", love.songEnd):on("loop", love.songEnd)
     playBGMusic()
 end
-
-function love.resize(width, height) lovesize.resize(width, height) end
-
-function love.songEnd() callState("songEnd") end
-
-function love.beatHit(n) callState("beatHit", n) end
 
 function love.update(dt)
     dt = math.min(dt, 1 / 30)
@@ -217,10 +209,6 @@ function love.update(dt)
     if trans.tween ~= nil and trans.tween:update(dt) then
         trans.tween = nil
         isTransitioning = false
-        if trans.__callback ~= nil then
-            trans.__callback()
-            trans.__callback = nil
-        end
         if trans.onComplete ~= nil then
             trans.onComplete()
             trans.onComplete = nil
@@ -236,8 +224,20 @@ function love.draw()
     callState("draw")
 
     if isTransitioning then
-        love.graphics.draw(gradient, 0, trans.y, 0, lovesize.getWidth(),
-                           lovesize.getHeight() * (transOut and 11 or 13))
+        local leWidth = lovesize.getWidth()
+        local leHeight
+        if trans.out then
+            leHeight = lovesize.getHeight() * 8.5
+        else
+            leHeight = lovesize.getHeight() * 5
+        end
+        love.graphics.draw(gradient, 0, trans.y, 0, leWidth, leHeight)
+        love.graphics.setColor(0, 0, 0)
+        if trans.out then trans.y = trans.y - leHeight * 2 end
+        love.graphics
+            .rectangle("fill", 0, trans.y + leHeight, leWidth, leHeight)
+        love.graphics.setColor(255, 255, 255)
+
     end
     if flash.alpha > 0 then
         love.graphics.setColor(flash.color[1], flash.color[2], flash.color[3],
@@ -251,8 +251,15 @@ function love.draw()
     drawScreenOverlay()
 end
 
+function love.resize(width, height) lovesize.resize(width, height) end
+
 function love.keypressed(key, scancode, isrepeat)
     if not isTransitioning then
         callState("keypressed", key, scancode, isrepeat)
     end
 end
+
+-- custom callbacks
+function love.songEnd() callState("songEnd") end
+
+function love.beatHit(n) callState("beatHit", n) end

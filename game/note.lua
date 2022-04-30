@@ -10,12 +10,12 @@ function Note:new()
     self:addByPrefix("blueScroll", "blue0")
     self:addByPrefix("purpleScroll", "purple0")
 
-    self:addByPrefix("purpleholdend", "green hold end")
+    self:addByPrefix("purpleholdend", "pruple end hold")
     self:addByPrefix("greenholdend", "green hold end")
     self:addByPrefix("redholdend", "red hold end")
     self:addByPrefix("blueholdend", "blue hold end")
 
-    self:addByPrefix("purplehold", "green hold piece")
+    self:addByPrefix("purplehold", "purple hold piece")
     self:addByPrefix("greenhold", "green hold piece")
     self:addByPrefix("redhold", "red hold piece")
     self:addByPrefix("bluehold", "blue hold piece")
@@ -24,24 +24,25 @@ function Note:new()
 end
 
 function Note:loadNote(note)
-    local color = utils.noteColors[note.noteData]
+    local color = utils.noteColors[note.noteData + 1]
 
     self.x, self.y = note.x, note.y
     self.sizeX, self.sizeY = note.sizeX, note.sizeY
 
     if note.isSustainNote then
         self.x = self.x + self.width / 4.25
-        self.y = self.y + self.height / 3.3
+        self.y = self.y + self.height / 2.85
 
         if note.isHoldEnd then
-            color = utils.noteColors[note.prevNote.noteData]
+            self:playAnim(color .. "holdend")
+            self.y = self.y - 1
+        else
+            color = utils.noteColors[note.prevNote.noteData + 1]
             self:playAnim(color .. "hold")
 
-            self.y = self.y + self.height / 3.25
-            self.sizeY = self.sizeY * (BGMusic.period / 1000 * 1.5) +
+            self.sizeY = self.sizeY * BGMusic.period / 100 * 1.5 *
                              playstate.SONG.speed
-        else
-            self:playAnim(color .. "holdend")
+            self.y = self.y + self.sizeY
         end
     else
         self:playAnim(color .. "Scroll")

@@ -18,17 +18,14 @@ function state.load()
     gf:addByIndices("danceRight", "gfDance", {
         15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29
     }, 24, false)
-    _c.add(gf)
 
     logo = sprite:new(paths.atlas("logoBumpin"), -125, -85)
     logo:addByPrefix("bump", "logo bumpin instance ", nil, 24, false)
-    _c.add(logo)
 
     titleText = sprite:new(paths.atlas("titleEnter"), 100, 576)
     titleText:addByPrefix("idle", "Press Enter to Begin")
     titleText:addByPrefix("press", "ENTER PRESSED")
     titleText:playAnim("idle")
-    _c.add(titleText)
 
     screenFlash(2)
 end

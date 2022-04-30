@@ -44,8 +44,6 @@ function state.load()
         menuItems[i] = item
     end
 
-    _c.add(menuItems)
-
     changeSelection(0)
 end
 

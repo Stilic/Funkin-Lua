@@ -14,9 +14,6 @@ end
 
 function cache.clear()
     for i = 1, #cache.objects do
-        if cache.objects[i].pause ~= nil then
-            cache.objects[i]:pause()
-        end
         if cache.objects[i].release ~= nil then
             cache.objects[i]:release()
         elseif cache.objects[i].destroy ~= ni then
