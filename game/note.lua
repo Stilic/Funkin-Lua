@@ -30,19 +30,14 @@ function Note:loadNote(note)
     self.sizeX, self.sizeY = note.sizeX, note.sizeY
 
     if note.isSustainNote then
-        self.x = self.x + self.width / 4.25
-        self.y = self.y + self.height / 2.85
-
         if note.isHoldEnd then
             self:playAnim(color .. "holdend")
-            self.y = self.y - 1
         else
             color = utils.noteColors[note.prevNote.noteData + 1]
             self:playAnim(color .. "hold")
 
             self.sizeY = self.sizeY * BGMusic.period / 100 * 1.5 *
                              playstate.SONG.speed
-            self.y = self.y + self.sizeY
         end
     else
         self:playAnim(color .. "Scroll")

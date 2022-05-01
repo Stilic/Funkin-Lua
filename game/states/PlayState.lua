@@ -97,6 +97,8 @@ local function generateSong()
             local swagNote = {
                 x = x,
                 y = 50 + daStrumTime * leSpeed,
+                distance = 0,
+
                 sizeX = size,
                 sizeY = size,
 
@@ -111,6 +113,13 @@ local function generateSong()
                 earlyHitMult = 1,
                 wasGoodHit = false,
                 tooLate = false,
+
+                copyX = true,
+                copyY = true,
+                copyAngle = true,
+                copyAlpha = true,
+
+                multAlpha = 1,
 
                 update = update
             }
@@ -130,6 +139,8 @@ local function generateSong()
                     local sustainNote = {
                         x = x,
                         y = 50 + susTime * leSpeed,
+                        distance = 0,
+
                         sizeX = size,
                         sizeY = size,
 
@@ -144,6 +155,13 @@ local function generateSong()
                         earlyHitMult = 0.5,
                         wasGoodHit = false,
                         tooLate = false,
+
+                        copyX = true,
+                        copyY = true,
+                        copyAngle = true,
+                        copyAlpha = true,
+
+                        multAlpha = 0.6,
 
                         update = update
                     }
@@ -240,8 +258,36 @@ end
 
 local function drawNote(daNote)
     fakeNote:loadNote(daNote)
-    fakeNote.y = fakeNote.y + -songPosition *
-                     (0.45 * utils.round(state.SONG.speed, 2))
+
+    local strum
+    if daNote.mustPress then
+        strum = playerStrums[daNote.noteData + 1]
+    else
+        strum = opponentStrums[daNote.noteData + 1]
+    end
+
+    daNote.distance = -0.45 * (songPosition - daNote.strumTime) *
+                          state.SONG.speed
+
+    if daNote.copyAngle then
+        fakeNote.angle = strum.direction - 90 + strum.angle
+    end
+    if daNote.copyAlpha then fakeNote.alpha = strum.alpha * daNote.multAlpha end
+
+    local angleDir = strum.direction * math.pi / 180
+    if daNote.copyX then
+        fakeNote.x = strum.x + math.cos(angleDir) * daNote.distance
+        if daNote.isSustainNote then
+            fakeNote.x = fakeNote.x + fakeNote.width / 4.25
+        end
+    end
+    if daNote.copyY then
+        fakeNote.y = strum.y + math.sin(angleDir) * daNote.distance
+        if daNote.isSustainNote then
+            fakeNote.y = fakeNote.y + fakeNote.height / 2
+        end
+    end
+
     if not utils.offscreen(fakeNote) then fakeNote:draw() end
 end
 

@@ -18,6 +18,7 @@ function Sprite:new(path, x, y)
     self.height = 0
 
     self.angle = 0
+    self.alpha = 1
 
     self.sizeX = 1
     self.sizeY = 1
@@ -25,6 +26,8 @@ function Sprite:new(path, x, y)
     self.offsetX = 0
     self.offsetY = 0
     self.centerOffsets = false
+
+    self.animOffsets = {}
 
     self.paused = false
 
@@ -142,9 +145,15 @@ function Sprite:draw(addX, addY)
                           2
         end
 
+        local animOffset = self.animOffsets[self.curAnim.name]
+        if animOffset == nil then animOffset = {0, 0} end
+
+        love.graphics.setColor(255, 255, 255, self.alpha)
         love.graphics.draw(self.image, frame.quad, x - self.offsetX + addX,
                            y - self.offsetY + addY, self.angle, self.sizeX,
-                           self.sizeY, offsetX, offsetY)
+                           self.sizeY, offsetX + animOffset[1],
+                           offsetY + animOffset[2])
+        love.graphics.setColor(255, 255, 255)
 
         if not self.paused and not self.curAnim.loop and spriteNum >=
             #self.curAnim.frames then self.curAnim.finished = true end
@@ -245,6 +254,12 @@ function Sprite:playAnim(anim, forced)
     end
 
     return self
+end
+
+function Sprite:addOffset(anim, x, y)
+    x = x or 0
+    y = y or 0
+    self.animOffsets[anim] = {x, y}
 end
 
 function Sprite:pause()
