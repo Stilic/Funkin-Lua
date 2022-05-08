@@ -8,7 +8,9 @@ function utils.readFile(path)
     return contents
 end
 
-function utils.readJson(path) return json.decode(utils.readFile(path), 1, nil) end
+function utils.readJson(path) 
+    return json.decode(utils.readFile(path), 1, nil) 
+end
 
 function utils.gradientMesh(dir, ...)
     -- Check for direction
@@ -61,11 +63,21 @@ function utils.callGroup(grp, func, ...)
     end
 end
 
-function utils.playSound(sound) TEsound.play(sound, "static") end
+function utils.playSound(sound) 
+    TEsound.play(sound, "static") 
+end
 
 function utils.round(num, numDecimalPlaces)
     local mult = 10 ^ (numDecimalPlaces or 0)
     return math.floor(num * mult + 0.5) / mult
+end
+
+function utils.lerp(a, b, ratio)
+    return a + ratio * (b - a)
+end
+
+function utils.boundTo(value, min, max)
+    return math.max(min, math.min(max, value))
 end
 
 function utils.sliceArray(tbl, first, last, step)
