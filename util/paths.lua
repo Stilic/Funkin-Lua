@@ -1,4 +1,4 @@
-local paths = {base = "assets", soundExt = ".ogg"}
+local paths = { base = "assets", soundExt = ".ogg" }
 
 function paths.getPath(path) return paths.base .. "/" .. path end
 
@@ -13,8 +13,7 @@ end
 function paths.formatToSongPath(path) return string.lower(path):gsub("% ", "-") end
 
 function paths.songFile(file, song)
-    return
-        paths.getPath("songs/" .. paths.formatToSongPath(song) .. "/" .. file)
+    return paths.getPath("songs/" .. paths.formatToSongPath(song) .. "/" .. file)
 end
 
 function paths.inst(song) return paths.songFile("Inst" .. paths.soundExt, song) end

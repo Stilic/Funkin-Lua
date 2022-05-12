@@ -1,13 +1,13 @@
 io.stdout:setvbuf("no")
 
 _GAME_VERSION = "1.0.0 git"
-options = {ghostTapping = true, middleScroll = false, downScroll = false}
+options = { ghostTapping = true, middleScroll = false, downScroll = false }
 
 local function drawScreenOverlay()
     love.graphics.print("FPS: " .. love.timer.getFPS() .. "\nTex MEM: " ..
-                            math.floor(
-                                love.graphics.getStats().texturememory / 1048576) ..
-                            " MB", 7, 7)
+        math.floor(
+            love.graphics.getStats().texturememory / 1048576) ..
+        " MB", 7, 7)
 end
 
 utils = require "util.utils"
@@ -32,13 +32,13 @@ require "lib.tesound"
 
 input = baton.new({
     controls = {
-        left = {"key:left", "key:a", "axis:leftx-", "button:dpleft"},
-        right = {"key:right", "key:d", "axis:leftx+", "button:dpright"},
-        up = {"key:up", "key:w", "axis:lefty-", "button:dpup"},
-        down = {"key:down", "key:s", "axis:lefty+", "button:dpdown"},
-        action = {"key:space", "button:x"},
-        accept = {"key:return", "button:start", "button:a"},
-        back = {"key:escape", "key:backspace", "button:b"}
+        left = { "key:left", "key:a", "axis:leftx-", "button:dpleft" },
+        right = { "key:right", "key:d", "axis:leftx+", "button:dpright" },
+        up = { "key:up", "key:w", "axis:lefty-", "button:dpup" },
+        down = { "key:down", "key:s", "axis:lefty+", "button:dpdown" },
+        action = { "key:space", "button:x" },
+        accept = { "key:return", "button:start", "button:a" },
+        back = { "key:escape", "key:backspace", "button:b" }
     },
     joystick = love.joystick.getJoysticks()[1]
 })
@@ -62,17 +62,17 @@ local function startTransition(out)
     trans.y = -lovesize.getHeight() * 10
     if out then
         trans.skipNextTransOut = true
-        gradient = utils.gradientMesh("vertical", {0, 0, 0, 1}, {0, 0, 0, 0})
+        gradient = utils.gradientMesh("vertical", { 0, 0, 0, 1 }, { 0, 0, 0, 0 })
     else
         trans.skipNextTransIn = true
-        gradient = utils.gradientMesh("vertical", {0, 0, 0, 0}, {0, 0, 0, 1})
+        gradient = utils.gradientMesh("vertical", { 0, 0, 0, 0 }, { 0, 0, 0, 1 })
         trans.y = trans.y / 2
         y = y / 2
     end
 
     trans.out = out
 
-    trans.tween = tween.new(trans.time, trans, {y = y})
+    trans.tween = tween.new(trans.time, trans, { y = y })
 end
 
 function screenFlash(duration, r, g, b)
@@ -82,8 +82,8 @@ function screenFlash(duration, r, g, b)
     if b == nil then b = 255 end
 
     flash.alpha = 1
-    flash.color = {r, g, b}
-    flash.tween = tween.new(duration, flash, {alpha = 0})
+    flash.color = { r, g, b }
+    flash.tween = tween.new(duration, flash, { alpha = 0 })
 end
 
 -- function dump(o)
@@ -178,7 +178,7 @@ function love.load()
     lovesize.set(1280, 720)
     love.keyboard.setKeyRepeat(true)
 
-    flash = {alpha = 0, color = {255, 255, 255}}
+    flash = { alpha = 0, color = { 255, 255, 255 } }
 
     vcrFont = love.graphics.newFont(paths.font("vcr.ttf"), 14, "light")
     love.graphics.setFont(vcrFont)
@@ -190,8 +190,8 @@ function love.load()
     callState("load")
 
     BGMusic = lovebpm.newTrack():load(defaultMusic):setVolume(0.7):setBPM(102)
-                  :setLooping(true):on("beat", love.beatHit)
-                  :on("end", love.songEnd):on("loop", love.songEnd)
+        :setLooping(true):on("beat", love.beatHit)
+        :on("end", love.songEnd):on("loop", love.songEnd)
     playBGMusic()
 end
 
@@ -241,7 +241,7 @@ function love.draw()
     end
     if flash.alpha > 0 then
         love.graphics.setColor(flash.color[1], flash.color[2], flash.color[3],
-                               flash.alpha)
+            flash.alpha)
         love.graphics.rectangle("fill", 0, 0, lovesize.getDimensions())
         love.graphics.setColor(255, 255, 255)
     end

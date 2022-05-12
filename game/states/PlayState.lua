@@ -28,6 +28,8 @@ local fakeNote
 local playerStrums
 local opponentStrums
 
+local healthBar
+
 local function generateStaticArrows(player)
     for i = 1, 4 do
         local leData = i - 1
@@ -64,8 +66,8 @@ local function generateSong()
     local update = function(self, dt)
         if self.mustPress then
             self.canBeHit = self.strumTime > songPosition - safeZoneOffset and
-                                self.strumTime < songPosition + safeZoneOffset *
-                                self.earlyHitMult
+                self.strumTime < songPosition + safeZoneOffset *
+                self.earlyHitMult
 
             if self.strumTime < songPosition - safeZoneOffset and
                 not self.wasGoodHit then self.tooLate = true end
@@ -134,7 +136,7 @@ local function generateSong()
                 for susNote = 0, floorSus do
                     oldNote = notes[#notes]
                     local susTime = daStrumTime + BGMusic.period * susNote +
-                                        BGMusic.period / roundedSpeed
+                        BGMusic.period / roundedSpeed
 
                     local sustainNote = {
                         x = x,
@@ -211,6 +213,9 @@ function state.load()
     generateStaticArrows(0)
     generateStaticArrows(1)
 
+    healthBar = paths.getImage("healthBar")
+    _c.add(healthBar)
+
     fakeNote = note:new()
 
     generateSong()
@@ -267,7 +272,7 @@ local function drawNote(daNote)
     end
 
     daNote.distance = -0.45 * (songPosition - daNote.strumTime) *
-                          state.SONG.speed
+        state.SONG.speed
 
     if daNote.copyAngle then
         fakeNote.angle = strum.direction - 90 + strum.angle
@@ -298,8 +303,12 @@ function state.draw()
     utils.callGroup(opponentStrums, "draw")
 
     if generatedMusic then
-        for n, daNote in ipairs(notes) do drawNote(daNote) end
+        for n, daNote in ipairs(notes) do
+            drawNote(daNote)
+        end
     end
+
+    love.graphics.draw(healthBar, lovesize.getWidth() / 2 - healthBar:getWidth() / 2, 650)
 end
 
 return state
