@@ -1,6 +1,6 @@
 io.stdout:setvbuf("no")
 
-_GAME_VERSION = "1.0.0 git"
+gameVersion = "1.0.0 git"
 options = { ghostTapping = true, middleScroll = false, downScroll = false }
 
 local function drawScreenOverlay()

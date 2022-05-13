@@ -97,7 +97,7 @@ function state.draw()
     love.graphics.draw(menuBG, 0, 0, 0, 1.1, 1.1)
 
     love.graphics.setColor(0, 0, 0)
-    love.graphics.print("v" .. _GAME_VERSION, 5, lovesize.getHeight() - 20)
+    love.graphics.print("v" .. gameVersion, 5, lovesize.getHeight() - 20)
     love.graphics.setColor(255, 255, 255)
 
     if not confirmed then utils.callGroup(menuItems, "draw") end
